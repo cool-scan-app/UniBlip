@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "apps/mobile",
-    "packages/shared"
+    "packages/shared",
+    "apps/api"
   ],
   "scripts": {
     "dev": "npm run start --workspace=mobile",
