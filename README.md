@@ -8,6 +8,7 @@ Mobile app project built with Expo and React Native.
 - TypeScript
 - npm workspaces
 - Node.js
+- Hono Web Framework
 
 ## Repository Structure
 
