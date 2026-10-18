@@ -29,6 +29,7 @@ UniBlip/
 ### Prerequisites
 - An Expo account
 - Expo Go installed on your phone
+- Node.js installed on your computer
 
 ### Expo
 1. Create account on [Expo](https://expo.dev/signup).
@@ -44,6 +45,12 @@ Log in via Expo CLI
 
 ```bash
 npx expo login
+```
+
+Start the backend server:
+
+```bash
+npm run api-dev
 ```
 
 Start the mobile app:
