@@ -4,5 +4,5 @@ npm run dev
 ```
 
 ```
-open http://localhost:8000
+open http://localhost:8000/api/v1
 ```
