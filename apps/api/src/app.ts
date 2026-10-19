@@ -41,8 +41,8 @@ api.get('/team', (c) => {
     team: 'UniBlip',
     members: [
       { name: 'Bolex Bolero', roles: ['PM', 'Frontend'] },
-      { name: 'Julia Wentalite', roles: ['Designer', 'Frontend'] },
-      { name: 'Tob Babbarin', roles: ['QA', 'Backend'] },
+      { name: 'Julia Wentalite', roles: ['UI/UX', 'Frontend'] },
+      { name: 'Tob Babarin', roles: ['QA', 'Backend'] },
       { name: 'Jesper', roles: ['PO', 'Backend'] }
     ]
   })
