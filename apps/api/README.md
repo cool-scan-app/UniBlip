@@ -7,6 +7,9 @@ The backend of UniBlip uses a layered architecture. It is divided into controlle
 ## Database
 The server has a database connection to a postgresql database that has to be set up locally for development. 
 
+01. install `postgresql 18` on your machine.
+02. run postgresql as the postgres user to create a new user
+
 To start the development server:
 ```bash
 npm run dev
