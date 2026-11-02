@@ -1,12 +1,14 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import sql from './db/pgsql.js'
 
 const app = new Hono()
 
 const api = app.basePath('/api/v1')
 app.use('*', logger())
 app.use('*', cors())
+
 
 /**
  * Health check endpoint for liveness probe. Returns a JSON object with the status, uptime, and timestamp.
@@ -20,11 +22,20 @@ app.get('/health/live', (c) => {
 /**
  * Health check endpoint for readiness probe. Checks if the database and downstream services are available.
  */
-app.get('/health/ready', (c) => {
+app.get('/health/ready', async (c) => {
   const uptime = process.uptime()
   const timestamp = new Date().toLocaleString()
-  return c.json({ status: 'Not yet ready. Database and downstream services are not yet implemented.', uptime, timestamp })
+  const db_connected = await sql`SELECT 1`.then(() => true).catch(() => false)
+  let status = 'not ready'
+
+  if (db_connected) {
+    status = 'ready'
+  }
+  
+  return c.json({ status, uptime, db_connected, timestamp })
 })
+
+  
 
 /**
  * Root endpoint.
