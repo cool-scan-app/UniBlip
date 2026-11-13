@@ -1,7 +1,9 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import sql from './db/pgsql.js'
+import { db } from './prisma/db.js'
+
+import * as userController from './controllers/userController.js'
 
 const app = new Hono()
 
@@ -25,13 +27,17 @@ app.get('/health/live', (c) => {
 app.get('/health/ready', async (c) => {
   const uptime = process.uptime()
   const timestamp = new Date().toLocaleString()
-  const db_connected = await sql`SELECT 1`.then(() => true).catch(() => false)
-  let status = 'not ready'
-
-  if (db_connected) {
-    status = 'ready'
+  // Check if the database is connected with a trivial `SELECT 1` round trip.
+  let db_connected = false
+  try {
+    const plan = db.raw.sql`SELECT 1 AS ok`.returnsRow({ ok: 'pg/int4@1' }).build()
+    const rows = await db.query(plan)
+    db_connected = rows.length === 1
+  } catch {
+    db_connected = false
   }
-  
+  const status = db_connected ? 'ready' : 'not ready'
+
   return c.json({ status, uptime, db_connected, timestamp })
 })
 
@@ -47,16 +53,11 @@ api.get('/', (c) => {
 /**
  * Dummy endpoint for the team.
  */
-api.get('/team', (c) => {
-  return c.json({
-    team: 'UniBlip',
-    members: [
-      { name: 'Bolex Bolero', roles: ['PM', 'Frontend'] },
-      { name: 'Julia Wentalite', roles: ['UI/UX', 'Frontend'] },
-      { name: 'Tob Babarin', roles: ['QA', 'Backend'] },
-      { name: 'Jesper', roles: ['PO', 'Backend'] }
-    ]
-  })
-})
+api.get('/team', userController.getAllUsers)
+
+/**
+ * Endpoint to get a specific team member by ID.
+ */
+api.get('/team/:id', userController.getUserById)
 
 export default app
