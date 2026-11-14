@@ -24,14 +24,14 @@ async function main() {
     ];
 
     for (const user of usersToAdd) {
-        const created = await db.orm.public.User.create({
+        const created = await db.orm.public.users.create({
         email: user.email,
         name: user.name,
         });
         console.log("Created:", created);
     }
     
-    const users = await db.orm.public.User.all();
+    const users = await db.orm.public.users.all();
     console.log("All users:", users);
 
     await db.close();

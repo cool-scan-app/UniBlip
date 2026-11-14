@@ -5,13 +5,16 @@
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
     "start": "node dist/main.ts",
-    "contract:emit": "npx prisma contract emit"
+    "contract:emit": "npx prisma contract emit",
+    "migrate:plan": "npx prisma migration plan --name",
+    "migrate:apply": "npx prisma db migrate --advance-ref db"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.3",
     "@prisma/orm-postgres": "^8.0.0-rc.23",
     "dotenv": "^18.0.10",
-    "hono": "^4.13.13"
+    "hono": "^4.13.13",
+    "prisma": "^8.0.0-rc.33"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

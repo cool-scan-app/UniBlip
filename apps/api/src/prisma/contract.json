@@ -4,8 +4,12 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "User": {
-      "model": "User",
+    "sessions": {
+      "model": "sessions",
+      "namespace": "public"
+    },
+    "users": {
+      "model": "users",
       "namespace": "public"
     }
   },
@@ -13,7 +17,54 @@
     "namespaces": {
       "public": {
         "models": {
-          "User": {
+          "sessions": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "expiresAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "expiresAt": {
+                  "column": "expiresAt"
+                },
+                "id": {
+                  "column": "id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "sessions"
+            }
+          },
+          "users": {
             "fields": {
               "email": {
                 "nullable": false,
@@ -51,7 +102,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "User"
+              "table": "users"
             }
           }
         }
@@ -63,7 +114,44 @@
       "public": {
         "entries": {
           "table": {
-            "User": {
+            "sessions": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "expiresAt": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "users": {
               "columns": {
                 "email": {
                   "codecId": "pg/text@1",
@@ -106,7 +194,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a62d15a094e80be7b342d75e0538935972b9699c76dabb5339940dd50d17a889"
+    "storageHash": "41e2fa3dd9276fac03e9c56e90040075acb267486c0d70e92200cc507ca26090"
   },
   "capabilities": {
     "postgres": {
