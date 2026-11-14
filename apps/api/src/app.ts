@@ -1,4 +1,4 @@
-import { Hono } from 'hono'
+import { Context, Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { db } from './prisma/db.js'
@@ -15,7 +15,7 @@ app.use('*', cors())
 /**
  * Health check endpoint for liveness probe. Returns a JSON object with the status, uptime, and timestamp.
  */
-app.get('/health/live', (c) => {
+app.get('/health/live', (c: Context) => {
   const uptime = process.uptime()
   const timestamp = new Date().toLocaleString()
   return c.json({ status: 'healthy', uptime, timestamp })
@@ -24,7 +24,7 @@ app.get('/health/live', (c) => {
 /**
  * Health check endpoint for readiness probe. Checks if the database and downstream services are available.
  */
-app.get('/health/ready', async (c) => {
+app.get('/health/ready', async (c: Context) => {
   const uptime = process.uptime()
   const timestamp = new Date().toLocaleString()
   // Check if the database is connected with a trivial `SELECT 1` round trip.
@@ -46,7 +46,7 @@ app.get('/health/ready', async (c) => {
 /**
  * Root endpoint.
  */
-api.get('/', (c) => {
+api.get('/', (c: Context) => {
   return c.text('Hello Hono!')
 })
 

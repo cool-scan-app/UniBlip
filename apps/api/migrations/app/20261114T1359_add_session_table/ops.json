@@ -1,0 +1,51 @@
+[
+  {
+    "id": "table.sessions",
+    "label": "Create table \"sessions\"",
+    "summary": "Creates table \"sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"sessions\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"sessions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"sessions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"sessions\"",
+        "sql": "CREATE TABLE \"public\".\"sessions\" (\n  \"createdAt\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz(3) NOT NULL,\n  \"id\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"sessions\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"sessions\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"sessions\""
+        }
+      }
+    ]
+  }
+]
