@@ -6,6 +6,7 @@ The backend of UniBlip uses a layered architecture. It is divided into controlle
 
 ## Database
 The server has a database connection to a postgresql database that has to be set up locally for development. 
+The server uses [Prisma ORM](https://www.prisma.io/docs) for database connections and database migrations.
 
 01. install `postgresql 18` on your machine.
 02. run postgresql as the postgres user to create a new user
@@ -14,13 +15,28 @@ The server has a database connection to a postgresql database that has to be set
 CREATE ROLE myuser WITH LOGIN PASSWORD "mypassword";
 CREATE DATABASE mydb OWNER myuser;
 ```
-04. create `.env.development.local` in the api folder.
+04. create `.env` in the api folder.
 05. add the following to the file and change `myuser`, `mypassword` and `mydb` to the user, password and database you created in step 3:
 ```env
-DATABASE_URL=postgresql://myuser:mypassword@localhost:5432/mydb
+DATABASE_URL="postgresql://myuser:mypassword@localhost:5432/mydb"
 ```
+06. Run the following command to create the tables in the database
+```bash
+npm run contract:emit       # Update contract.json and contract.d.ts
+npx prisma db init          # Create tables in the database
+npm run migrate:status      # Show migration status
+```
+The tables will now appear in the database and the last command will show the status and history of the migrations.
+07. run the script `db_script.ts` to insert dummy users to the database.
+```bash
+npx tsx db_script.ts
+```
+The users spcecified in the script are visible in the database. If you start the server and make a GET request to `[localhost:8000/api/v1/team](http://localhost:8000/api/v1/team), the development team will be returned as a list of users.
 
-The server uses [postgres.js](https://www.npmjs.com/package/postgres) for database connections and [drizzle ORM](https://orm.drizzle.team/) for database migrations.
+### Database migrations
+Not yet described but will follow soon!
+
+
 
 
 To start the development server (from api-folder):
