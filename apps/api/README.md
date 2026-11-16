@@ -6,7 +6,8 @@ The backend of UniBlip uses a layered architecture. It is divided into controlle
 
 ## Database
 The server has a database connection to a postgresql database that has to be set up locally for development. 
-The server uses [Prisma ORM](https://www.prisma.io/docs) for database connections and database migrations.
+The server uses [Prisma ORM](https://www.prisma.io/docs) for database connections and database migrations. 
+See [`ERD.md`](ERD.md) for the entity relationship diagram of the database. 
 
 01. install `postgresql 18` on your machine.
 02. run postgresql as the postgres user to create a new user
@@ -27,17 +28,31 @@ npx prisma db init          # Create tables in the database
 npm run migrate:status      # Show migration status
 ```
 The tables will now appear in the database and the last command will show the status and history of the migrations.
+
 07. run the script `db_script.ts` to insert dummy users to the database.
 ```bash
 npx tsx db_script.ts
 ```
-The users spcecified in the script are visible in the database. If you start the server and make a GET request to `[localhost:8000/api/v1/team](http://localhost:8000/api/v1/team), the development team will be returned as a list of users.
+The users spcecified in the script are visible in the database. If you start the server and make a GET request to [`localhost:8000/api/v1/team`](http://localhost:8000/api/v1/team), the development team will be returned as a list of users. Or you can find individual team members with their id by making a GET request to `localhost:8000/api/v1/team/:id` where you replace `:id` with the id of the team member.
 
 ### Database migrations
-Not yet described but will follow soon!
+To make changes to the database model, edit [`contract.prisma`](./src/prisma/contract.prisma) in `src/prisma/`. Regenerate `contract.d.ts` and `contract.json` with the command:
+```bash
+npm run contract:emit
+```
+Then plan a migration and name it with the command:
+```bash
+npm run migrate:plan <migration_name>
+```
+This command compares the new contract with the latest applied to the database and writes the difference to a folder named with the date, time and migration name in `migrations/app/`
 
+To apply the migration to the database, run the command:
+```bash
+npm run migrate:apply
+```
+The command runs all the migrations that are not yet applied to the database. 
 
-
+## Start the server
 
 To start the development server (from api-folder):
 ```bash
@@ -54,12 +69,13 @@ http://localhost:8000/api/v1
 Server endpoints:
 | endpoint | method | description |
 | :--------: | :------: | ----------- |
-| ```/health/live``` | GET | liveness probe |
-| ```/health/ready``` | GET | readiness probe |
+| `/health/live` | GET | liveness probe |
+| `/health/ready` | GET | readiness probe |
 
 
-Application endpoints (preceeded by```/api/v1```):
+Application endpoints (preceeded by`/api/v1`):
 | endpoint | method | description |
 | :--------: | :------: | :----------- |
-| ```/``` | GET | root of application |
-| ```/team``` | GET | Dummy endpoint for showing dev team and roles |
+| `/` | GET | root of application |
+| `/team` | GET | Dummy endpoint for showing dev team |
+| `/team/:id` | GET | Dummy endpoint for showing a individual dev team member by their id |
