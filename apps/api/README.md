@@ -9,19 +9,20 @@ The server has a database connection to a postgresql database that has to be set
 The server uses [Prisma ORM](https://www.prisma.io/docs) for database connections and database migrations. 
 See [`ERD.md`](ERD.md) for the entity relationship diagram of the database. 
 
-01. install `postgresql 18` on your machine.
-02. run postgresql as the postgres user to create a new user
-03. Create the user and the database with the sql commands (replace `myuser`, `mypassword` and `mydb` with the username, password and name of the database you want to create):
+01. If you haven't run `npm install` in the root of the project yet, start with that.
+02. install `postgresql 18` on your machine.
+03. run postgresql as the postgres user to create a new user
+04. Create the user and the database with the sql commands (replace `myuser`, `mypassword` and `mydb` with the username, password and name of the database you want to create):
 ```sql
 CREATE ROLE myuser WITH LOGIN PASSWORD "mypassword";
 CREATE DATABASE mydb OWNER myuser;
 ```
-04. create `.env` in the api folder.
-05. add the following to the file and change `myuser`, `mypassword` and `mydb` to the user, password and database you created in step 3:
+05. create `.env` in the api folder.
+06. add the following to the file and change `myuser`, `mypassword` and `mydb` to the user, password and database you created in step 3:
 ```env
 DATABASE_URL="postgresql://myuser:mypassword@localhost:5432/mydb"
 ```
-06. Run the following command to create the tables in the database
+07. Run the following command to create the tables in the database
 ```bash
 npm run contract:emit       # Update contract.json and contract.d.ts
 npx prisma db init          # Create tables in the database
@@ -29,7 +30,7 @@ npm run migrate:status      # Show migration status
 ```
 The tables will now appear in the database and the last command will show the status and history of the migrations.
 
-07. run the script `db_script.ts` to insert dummy users to the database.
+08. run the script `db_script.ts` to insert dummy users to the database.
 ```bash
 npx tsx db_script.ts
 ```
