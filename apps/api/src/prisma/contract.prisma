@@ -36,3 +36,22 @@ model Store {
   @@map("stores")
 }
 
+model Product {
+  id          String  @id
+  name        String
+  barcode     String  @unique
+  externalId  String  @map("external_id")
+
+  @@map("products")
+}
+
+model StoreProduct {
+  storeId   String  @map("store_id")
+  productId String  @map("product_id")
+  store     Store   @relation(fields: [storeId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  price     Money
+
+  @@id([storeId, productId])
+  @@map("store_products")
+}
