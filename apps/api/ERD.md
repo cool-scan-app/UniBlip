@@ -5,11 +5,12 @@ erDiagram
     STORE_PRODUCT ||--o{ CART_ITEM : "appears in"
     STORE ||--o{ CART : has
     STORE ||--o{ STORE_PRODUCT : sells
+    STORE }|--|| STORE_ADDRESS : has
     PRODUCT ||--o{ STORE_PRODUCT : "is sold as"
     SESSION {
         uuid id PK
         timestamp created_at
-        timestamp last_seen_at
+        timestamp updated_at
         timestamp expires_at
     }
     CART {
@@ -33,8 +34,15 @@ erDiagram
     STORE {
         string id PK
         string name
-        string address
+        string address_id FK
         point location
+    }
+    STORE_ADDRESS {
+        string id PK
+        string street
+        int street_nr
+        string city
+        int postal_code
     }
     STORE_PRODUCT {
         string store_id PK,FK
