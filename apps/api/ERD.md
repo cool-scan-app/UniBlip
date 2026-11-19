@@ -35,7 +35,8 @@ erDiagram
         string id PK
         string name
         string address_id FK
-        point location
+        float latitude
+        float longitude
     }
     STORE_ADDRESS {
         string id PK

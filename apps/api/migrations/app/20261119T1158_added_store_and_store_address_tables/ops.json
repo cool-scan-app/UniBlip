@@ -1,0 +1,200 @@
+[
+  {
+    "id": "table.store_addresses",
+    "label": "Create table \"store_addresses\"",
+    "summary": "Creates table \"store_addresses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "store_addresses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"store_addresses\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"store_addresses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"store_addresses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"store_addresses\"",
+        "sql": "CREATE TABLE \"public\".\"store_addresses\" (\n  \"city\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"postal_code\" int4 NOT NULL,\n  \"street\" text NOT NULL,\n  \"street_nr\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"store_addresses\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"store_addresses\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"store_addresses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.stores",
+    "label": "Create table \"stores\"",
+    "summary": "Creates table \"stores\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "stores"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"stores\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"stores\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"stores\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"stores\"",
+        "sql": "CREATE TABLE \"public\".\"stores\" (\n  \"address_id\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"latitude\" float8 NOT NULL,\n  \"longitude\" float8 NOT NULL,\n  \"name\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"stores\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"stores\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"stores\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "index.stores.stores_address_id_idx_f563b795",
+    "label": "Create index \"stores_address_id_idx_f563b795\" on \"stores\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "stores_address_id_idx_f563b795",
+        "table": "stores"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"stores_address_id_idx_f563b795\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"stores_address_id_idx_f563b795\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"stores_address_id_idx_f563b795\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"stores_address_id_idx_f563b795\"",
+        "sql": "CREATE INDEX \"stores_address_id_idx_f563b795\" ON \"public\".\"stores\" (\"address_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"stores_address_id_idx_f563b795\" exists on \"stores\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"stores_address_id_idx_f563b795\"",
+          "i",
+          "I",
+          "\"public\".\"stores\"",
+          "btree",
+          "[\"address_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.stores.stores_address_id_fkey",
+    "label": "Add foreign key \"stores_address_id_fkey\" on \"stores\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "stores_address_id_fkey",
+        "table": "stores"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"stores_address_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "stores_address_id_fkey",
+          "public",
+          "\"public\".\"stores\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"stores_address_id_fkey\" on \"stores\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"stores_address_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"stores\"\nADD CONSTRAINT \"stores_address_id_fkey\"\nFOREIGN KEY (\"address_id\")\nREFERENCES \"public\".\"store_addresses\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"stores_address_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "stores_address_id_fkey",
+          "public",
+          "\"public\".\"stores\"",
+          "f",
+          "[\"address_id\"]",
+          "\"public\".\"store_addresses\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  }
+]

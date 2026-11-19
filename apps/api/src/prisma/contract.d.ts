@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'233b254ae61f2ff0c6fe2b3329fe16dd5858313ed314e1d53bc7dace445a7e33'>;
+  StorageHashBase<'69506ccadd416f70b6e225d83f896ca0392c4cc0758bc9ef06b375e06d67762e'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -315,6 +315,23 @@ export namespace Models {
     updatedAt: FieldOutputTypes['public']['Session']['updatedAt'];
     readonly [RelationKeys]?: never;
   };
+  export type public_Store = {
+    addressId: FieldOutputTypes['public']['Store']['addressId'];
+    id: FieldOutputTypes['public']['Store']['id'];
+    latitude: FieldOutputTypes['public']['Store']['latitude'];
+    longitude: FieldOutputTypes['public']['Store']['longitude'];
+    name: FieldOutputTypes['public']['Store']['name'];
+    address: public_StoreAddress;
+    readonly [RelationKeys]?: 'address';
+  };
+  export type public_StoreAddress = {
+    city: FieldOutputTypes['public']['StoreAddress']['city'];
+    id: FieldOutputTypes['public']['StoreAddress']['id'];
+    postalCode: FieldOutputTypes['public']['StoreAddress']['postalCode'];
+    street: FieldOutputTypes['public']['StoreAddress']['street'];
+    streetNr: FieldOutputTypes['public']['StoreAddress']['streetNr'];
+    readonly [RelationKeys]?: never;
+  };
   export type public_users = {
     email: FieldOutputTypes['public']['users']['email'];
     id: FieldOutputTypes['public']['users']['id'];
@@ -326,6 +343,8 @@ export namespace Models {
 export declare const models: {
   public: {
     Session: Models.public_Session;
+    Store: Models.public_Store;
+    StoreAddress: Models.public_StoreAddress;
     users: Models.public_users;
   };
 };
@@ -385,6 +404,102 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
+            readonly store_addresses: {
+              columns: {
+                readonly city: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly postal_code: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly street: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly street_nr: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+            readonly stores: {
+              columns: {
+                readonly address_id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly latitude: {
+                  readonly dataType: 'pg/float8';
+                  readonly codecId: 'pg/float8@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly longitude: {
+                  readonly dataType: 'pg/float8';
+                  readonly codecId: 'pg/float8@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'stores_address_id_idx_f563b795';
+                  readonly prefix: 'stores_address_id_idx';
+                  readonly columns: readonly ['address_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'stores';
+                    readonly columns: readonly ['address_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'store_addresses';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly users: {
               columns: {
                 readonly email: {
@@ -427,6 +542,11 @@ type ContractBase = Omit<
   readonly targetFamily: 'sql';
   readonly roots: {
     readonly sessions: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
+    readonly store_addresses: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'StoreAddress';
+    };
+    readonly stores: { readonly namespace: 'public' & NamespaceId; readonly model: 'Store' };
     readonly users: { readonly namespace: 'public' & NamespaceId; readonly model: 'users' };
   };
   readonly domain: {
@@ -473,6 +593,91 @@ type ContractBase = Omit<
                 readonly expiresAt: { readonly column: 'expires_at' };
                 readonly id: { readonly column: 'id' };
                 readonly updatedAt: { readonly column: 'updated_at' };
+              };
+            };
+          };
+          readonly Store: {
+            readonly fields: {
+              readonly addressId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly latitude: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
+              };
+              readonly longitude: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly address: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StoreAddress';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['addressId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'stores';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly addressId: { readonly column: 'address_id' };
+                readonly id: { readonly column: 'id' };
+                readonly latitude: { readonly column: 'latitude' };
+                readonly longitude: { readonly column: 'longitude' };
+                readonly name: { readonly column: 'name' };
+              };
+            };
+          };
+          readonly StoreAddress: {
+            readonly fields: {
+              readonly city: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly postalCode: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly street: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly streetNr: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'store_addresses';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly city: { readonly column: 'city' };
+                readonly id: { readonly column: 'id' };
+                readonly postalCode: { readonly column: 'postal_code' };
+                readonly street: { readonly column: 'street' };
+                readonly streetNr: { readonly column: 'street_nr' };
               };
             };
           };

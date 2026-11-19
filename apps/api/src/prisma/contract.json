@@ -8,6 +8,14 @@
       "model": "Session",
       "namespace": "public"
     },
+    "store_addresses": {
+      "model": "StoreAddress",
+      "namespace": "public"
+    },
+    "stores": {
+      "model": "Store",
+      "namespace": "public"
+    },
     "users": {
       "model": "users",
       "namespace": "public"
@@ -75,6 +83,145 @@
               },
               "namespaceId": "public",
               "table": "sessions"
+            }
+          },
+          "Store": {
+            "fields": {
+              "addressId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "latitude": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "longitude": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "address": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "addressId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StoreAddress",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "addressId": {
+                  "column": "address_id"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "latitude": {
+                  "column": "latitude"
+                },
+                "longitude": {
+                  "column": "longitude"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "public",
+              "table": "stores"
+            }
+          },
+          "StoreAddress": {
+            "fields": {
+              "city": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "postalCode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "street": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "streetNr": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "city": {
+                  "column": "city"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "postalCode": {
+                  "column": "postal_code"
+                },
+                "street": {
+                  "column": "street"
+                },
+                "streetNr": {
+                  "column": "street_nr"
+                }
+              },
+              "namespaceId": "public",
+              "table": "store_addresses"
             }
           },
           "users": {
@@ -176,6 +323,109 @@
               },
               "uniques": []
             },
+            "store_addresses": {
+              "columns": {
+                "city": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "postal_code": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "street": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "street_nr": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "stores": {
+              "columns": {
+                "address_id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "latitude": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "nullable": false
+                },
+                "longitude": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "stores_address_id_idx_f563b795"
+                  },
+                  "source": {
+                    "columns": [
+                      "address_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "stores"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "store_addresses"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "address_id"
+                  ],
+                  "name": "stores_address_id_idx_f563b795",
+                  "prefix": "stores_address_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "users": {
               "columns": {
                 "email": {
@@ -219,7 +469,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "233b254ae61f2ff0c6fe2b3329fe16dd5858313ed314e1d53bc7dace445a7e33"
+    "storageHash": "69506ccadd416f70b6e225d83f896ca0392c4cc0758bc9ef06b375e06d67762e"
   },
   "capabilities": {
     "postgres": {
