@@ -17,7 +17,7 @@ erDiagram
         string id PK
         string session_id FK
         string store_id FK
-        date created
+        timestamp created_at
     }
     PRODUCT {
         string id PK
