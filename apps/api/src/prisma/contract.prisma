@@ -55,3 +55,30 @@ model StoreProduct {
   @@id([storeId, productId])
   @@map("store_products")
 }
+
+model Cart {
+  id        String   @id
+  sessionId String   @map("session_id")
+  storeId   String   @map("store_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  store     Store    @relation(fields: [storeId], references: [id])
+
+  @@unique([id, storeId])
+  @@unique([sessionId, storeId])
+  @@map("carts")
+}
+
+model CartItem {
+  cartId        String          @map("cart_id")
+  productId     String          @map("product_id")
+  storeId       String          @map("store_id")
+  quantity      Int
+
+  cart          Cart            @relation(fields: [cartId, storeId], references: [id, storeId], onDelete: Cascade)
+  storeProduct  StoreProduct    @relation(fields: [productId, storeId], references: [productId, storeId]) @map("store_product")
+  
+  @@id([cartId, productId])
+  @@map("cart_items")
+}
