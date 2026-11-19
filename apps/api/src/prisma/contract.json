@@ -165,10 +165,12 @@
                 "nullable": false,
                 "on": {
                   "localFields": [
-                    "cartId"
+                    "cartId",
+                    "storeId"
                   ],
                   "targetFields": [
-                    "id"
+                    "id",
+                    "storeId"
                   ]
                 },
                 "to": {
@@ -176,30 +178,16 @@
                   "namespace": "public"
                 }
               },
-              "product": {
+              "storeProduct": {
                 "cardinality": "N:1",
                 "nullable": false,
                 "on": {
                   "localFields": [
-                    "productId"
-                  ],
-                  "targetFields": [
-                    "productId"
-                  ]
-                },
-                "to": {
-                  "model": "StoreProduct",
-                  "namespace": "public"
-                }
-              },
-              "store": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
+                    "productId",
                     "storeId"
                   ],
                   "targetFields": [
+                    "productId",
                     "storeId"
                   ]
                 },
@@ -617,6 +605,10 @@
                 "quantity": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 1
+                  },
                   "nullable": false
                 },
                 "store_id": {
@@ -628,48 +620,12 @@
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "cart_items_cart_id_idx_0b3cd05c"
+                    "name": "cart_items_cart_id_store_id_idx_5c3d078b"
                   },
+                  "onDelete": "cascade",
                   "source": {
                     "columns": [
-                      "cart_id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "cart_items"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "carts"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "cart_items_product_id_idx_22a2b7d2"
-                  },
-                  "source": {
-                    "columns": [
-                      "product_id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "cart_items"
-                  },
-                  "target": {
-                    "columns": [
-                      "product_id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "store_products"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "cart_items_store_id_idx_e817cc5e"
-                  },
-                  "source": {
-                    "columns": [
+                      "cart_id",
                       "store_id"
                     ],
                     "namespaceId": "public",
@@ -677,6 +633,28 @@
                   },
                   "target": {
                     "columns": [
+                      "id",
+                      "store_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "carts"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "cart_items_product_id_store_id_idx_2afee116"
+                  },
+                  "source": {
+                    "columns": [
+                      "product_id",
+                      "store_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "cart_items"
+                  },
+                  "target": {
+                    "columns": [
+                      "product_id",
                       "store_id"
                     ],
                     "namespaceId": "public",
@@ -687,26 +665,20 @@
               "indexes": [
                 {
                   "columns": [
-                    "cart_id"
-                  ],
-                  "name": "cart_items_cart_id_idx_0b3cd05c",
-                  "prefix": "cart_items_cart_id_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "product_id"
-                  ],
-                  "name": "cart_items_product_id_idx_22a2b7d2",
-                  "prefix": "cart_items_product_id_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
+                    "cart_id",
                     "store_id"
                   ],
-                  "name": "cart_items_store_id_idx_e817cc5e",
-                  "prefix": "cart_items_store_id_idx",
+                  "name": "cart_items_cart_id_store_id_idx_5c3d078b",
+                  "prefix": "cart_items_cart_id_store_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "product_id",
+                    "store_id"
+                  ],
+                  "name": "cart_items_product_id_store_id_idx_2afee116",
+                  "prefix": "cart_items_product_id_store_id_idx",
                   "unique": false
                 }
               ],
@@ -753,6 +725,7 @@
                   "index": {
                     "name": "carts_session_id_idx_00ba47bf"
                   },
+                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "session_id"
@@ -811,7 +784,20 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "id",
+                    "store_id"
+                  ]
+                },
+                {
+                  "columns": [
+                    "session_id",
+                    "store_id"
+                  ]
+                }
+              ]
             },
             "products": {
               "columns": {
@@ -1130,7 +1116,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "01a09d5f17b6807ab384ef194863509277052aa4429b5aecb1eb9deda0a97621"
+    "storageHash": "cb29d9cf5add1f3f4f8c7ec8bd2755a4505e5c29623df4ea659d82e385687ac7"
   },
   "capabilities": {
     "postgres": {

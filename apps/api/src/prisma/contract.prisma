@@ -74,7 +74,7 @@ model CartItem {
   cartId        String          @map("cart_id")
   productId     String          @map("product_id")
   storeId       String          @map("store_id")
-  quantity      Int
+  quantity      Int             @default(1)
 
   cart          Cart            @relation(fields: [cartId, storeId], references: [id, storeId], onDelete: Cascade)
   storeProduct  StoreProduct    @relation(fields: [productId, storeId], references: [productId, storeId]) @map("store_product")

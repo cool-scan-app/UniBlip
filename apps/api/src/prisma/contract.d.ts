@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'01a09d5f17b6807ab384ef194863509277052aa4429b5aecb1eb9deda0a97621'>;
+  StorageHashBase<'cb29d9cf5add1f3f4f8c7ec8bd2755a4505e5c29623df4ea659d82e385687ac7'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -323,9 +323,8 @@ export namespace Models {
     quantity: FieldOutputTypes['public']['CartItem']['quantity'];
     storeId: FieldOutputTypes['public']['CartItem']['storeId'];
     cart: public_Cart;
-    product: public_StoreProduct;
-    store: public_StoreProduct;
-    readonly [RelationKeys]?: 'cart' | 'product' | 'store';
+    storeProduct: public_StoreProduct;
+    readonly [RelationKeys]?: 'cart' | 'storeProduct';
   };
   export type public_Product = {
     barcode: FieldOutputTypes['public']['Product']['barcode'];
@@ -423,6 +422,10 @@ type ContractBase = Omit<
                   readonly dataType: 'pg/int4';
                   readonly codecId: 'pg/int4@1';
                   readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 1>;
+                  };
                   readonly many: false;
                 };
                 readonly store_id: {
@@ -436,21 +439,15 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
-                  readonly name: 'cart_items_cart_id_idx_0b3cd05c';
-                  readonly prefix: 'cart_items_cart_id_idx';
-                  readonly columns: readonly ['cart_id'];
+                  readonly name: 'cart_items_cart_id_store_id_idx_5c3d078b';
+                  readonly prefix: 'cart_items_cart_id_store_id_idx';
+                  readonly columns: readonly ['cart_id', 'store_id'];
                   readonly unique: false;
                 },
                 {
-                  readonly name: 'cart_items_product_id_idx_22a2b7d2';
-                  readonly prefix: 'cart_items_product_id_idx';
-                  readonly columns: readonly ['product_id'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'cart_items_store_id_idx_e817cc5e';
-                  readonly prefix: 'cart_items_store_id_idx';
-                  readonly columns: readonly ['store_id'];
+                  readonly name: 'cart_items_product_id_store_id_idx_2afee116';
+                  readonly prefix: 'cart_items_product_id_store_id_idx';
+                  readonly columns: readonly ['product_id', 'store_id'];
                   readonly unique: false;
                 },
               ];
@@ -459,36 +456,24 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'cart_items';
-                    readonly columns: readonly ['cart_id'];
+                    readonly columns: readonly ['cart_id', 'store_id'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'carts';
-                    readonly columns: readonly ['id'];
+                    readonly columns: readonly ['id', 'store_id'];
                   };
                 },
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'cart_items';
-                    readonly columns: readonly ['product_id'];
+                    readonly columns: readonly ['product_id', 'store_id'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'store_products';
-                    readonly columns: readonly ['product_id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'cart_items';
-                    readonly columns: readonly ['store_id'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'store_products';
-                    readonly columns: readonly ['store_id'];
+                    readonly columns: readonly ['product_id', 'store_id'];
                   };
                 },
               ];
@@ -523,7 +508,10 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
+              uniques: readonly [
+                { readonly columns: readonly ['id', 'store_id'] },
+                { readonly columns: readonly ['session_id', 'store_id'] },
+              ];
               indexes: readonly [
                 {
                   readonly name: 'carts_session_id_idx_00ba47bf';
@@ -939,11 +927,11 @@ type ContractBase = Omit<
                 readonly cardinality: 'N:1';
                 readonly nullable: false;
                 readonly on: {
-                  readonly localFields: readonly ['cartId'];
-                  readonly targetFields: readonly ['id'];
+                  readonly localFields: readonly ['cartId', 'storeId'];
+                  readonly targetFields: readonly ['id', 'storeId'];
                 };
               };
-              readonly product: {
+              readonly storeProduct: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'StoreProduct';
@@ -951,20 +939,8 @@ type ContractBase = Omit<
                 readonly cardinality: 'N:1';
                 readonly nullable: false;
                 readonly on: {
-                  readonly localFields: readonly ['productId'];
-                  readonly targetFields: readonly ['productId'];
-                };
-              };
-              readonly store: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'StoreProduct';
-                };
-                readonly cardinality: 'N:1';
-                readonly nullable: false;
-                readonly on: {
-                  readonly localFields: readonly ['storeId'];
-                  readonly targetFields: readonly ['storeId'];
+                  readonly localFields: readonly ['productId', 'storeId'];
+                  readonly targetFields: readonly ['productId', 'storeId'];
                 };
               };
             };
