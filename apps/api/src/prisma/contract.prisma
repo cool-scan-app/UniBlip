@@ -18,9 +18,9 @@ model Session {
 model StoreAddress {
   id          String  @id
   street      String
-  streetNr    Int     @map("street_nr")
+  streetNr    String  @map("street_nr")
   city        String
-  postalCode  Int     @map("postal_code")
+  postalCode  String  @map("postal_code")
 
   @@map("store_addresses")
 }
