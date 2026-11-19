@@ -4,12 +4,20 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "products": {
+      "model": "Product",
+      "namespace": "public"
+    },
     "sessions": {
       "model": "Session",
       "namespace": "public"
     },
     "store_addresses": {
       "model": "StoreAddress",
+      "namespace": "public"
+    },
+    "store_products": {
+      "model": "StoreProduct",
       "namespace": "public"
     },
     "stores": {
@@ -25,6 +33,57 @@
     "namespaces": {
       "public": {
         "models": {
+          "Product": {
+            "fields": {
+              "barcode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "externalId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "barcode": {
+                  "column": "barcode"
+                },
+                "externalId": {
+                  "column": "external_id"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "public",
+              "table": "products"
+            }
+          },
           "Session": {
             "fields": {
               "createdAt": {
@@ -224,6 +283,80 @@
               "table": "store_addresses"
             }
           },
+          "StoreProduct": {
+            "fields": {
+              "price": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/money@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "storeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "store": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "storeId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Store",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "price": {
+                  "column": "price"
+                },
+                "productId": {
+                  "column": "product_id"
+                },
+                "storeId": {
+                  "column": "store_id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "store_products"
+            }
+          },
           "users": {
             "fields": {
               "email": {
@@ -274,6 +407,44 @@
       "public": {
         "entries": {
           "table": {
+            "products": {
+              "columns": {
+                "barcode": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "external_id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "barcode"
+                  ]
+                }
+              ]
+            },
             "sessions": {
               "columns": {
                 "created_at": {
@@ -356,6 +527,90 @@
               "primaryKey": {
                 "columns": [
                   "id"
+                ]
+              },
+              "uniques": []
+            },
+            "store_products": {
+              "columns": {
+                "price": {
+                  "codecId": "pg/money@1",
+                  "dataType": "pg/money",
+                  "nullable": false
+                },
+                "product_id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "store_id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "store_products_store_id_idx_e817cc5e"
+                  },
+                  "source": {
+                    "columns": [
+                      "store_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "store_products"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "stores"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "store_products_product_id_idx_22a2b7d2"
+                  },
+                  "source": {
+                    "columns": [
+                      "product_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "store_products"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "products"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "product_id"
+                  ],
+                  "name": "store_products_product_id_idx_22a2b7d2",
+                  "prefix": "store_products_product_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "store_id"
+                  ],
+                  "name": "store_products_store_id_idx_e817cc5e",
+                  "prefix": "store_products_store_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "store_id",
+                  "product_id"
                 ]
               },
               "uniques": []
@@ -469,7 +724,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "69506ccadd416f70b6e225d83f896ca0392c4cc0758bc9ef06b375e06d67762e"
+    "storageHash": "8a322251cb614fac8153216146324f2b5d297e1281c6a7e2d45bbd9512ddddc5"
   },
   "capabilities": {
     "postgres": {
