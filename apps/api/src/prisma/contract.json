@@ -5,7 +5,7 @@
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
     "sessions": {
-      "model": "sessions",
+      "model": "Session",
       "namespace": "public"
     },
     "users": {
@@ -17,7 +17,7 @@
     "namespaces": {
       "public": {
         "models": {
-          "sessions": {
+          "Session": {
             "fields": {
               "createdAt": {
                 "nullable": false,
@@ -45,19 +45,32 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
               }
             },
             "relations": {},
             "storage": {
               "fields": {
                 "createdAt": {
-                  "column": "createdAt"
+                  "column": "created_at"
                 },
                 "expiresAt": {
-                  "column": "expiresAt"
+                  "column": "expires_at"
                 },
                 "id": {
                   "column": "id"
+                },
+                "updatedAt": {
+                  "column": "updated_at"
                 }
               },
               "namespaceId": "public",
@@ -116,7 +129,7 @@
           "table": {
             "sessions": {
               "columns": {
-                "createdAt": {
+                "created_at": {
                   "codecId": "pg/timestamptz-date@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -128,7 +141,7 @@
                     "precision": 3
                   }
                 },
-                "expiresAt": {
+                "expires_at": {
                   "codecId": "pg/timestamptz-date@1",
                   "dataType": "pg/timestamptz",
                   "nullable": false,
@@ -140,6 +153,18 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "updated_at": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
                 }
               },
               "foreignKeys": [],
@@ -194,7 +219,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "41e2fa3dd9276fac03e9c56e90040075acb267486c0d70e92200cc507ca26090"
+    "storageHash": "233b254ae61f2ff0c6fe2b3329fe16dd5858313ed314e1d53bc7dace445a7e33"
   },
   "capabilities": {
     "postgres": {

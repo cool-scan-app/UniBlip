@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'41e2fa3dd9276fac03e9c56e90040075acb267486c0d70e92200cc507ca26090'>;
+  StorageHashBase<'233b254ae61f2ff0c6fe2b3329fe16dd5858313ed314e1d53bc7dace445a7e33'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -308,10 +308,11 @@ export type StorageColumnInputTypes = ColumnTypesFromStorage<
 >;
 
 export namespace Models {
-  export type public_sessions = {
-    createdAt: FieldOutputTypes['public']['sessions']['createdAt'];
-    expiresAt: FieldOutputTypes['public']['sessions']['expiresAt'];
-    id: FieldOutputTypes['public']['sessions']['id'];
+  export type public_Session = {
+    createdAt: FieldOutputTypes['public']['Session']['createdAt'];
+    expiresAt: FieldOutputTypes['public']['Session']['expiresAt'];
+    id: FieldOutputTypes['public']['Session']['id'];
+    updatedAt: FieldOutputTypes['public']['Session']['updatedAt'];
     readonly [RelationKeys]?: never;
   };
   export type public_users = {
@@ -324,7 +325,7 @@ export namespace Models {
 
 export declare const models: {
   public: {
-    sessions: Models.public_sessions;
+    Session: Models.public_Session;
     users: Models.public_users;
   };
 };
@@ -349,7 +350,7 @@ type ContractBase = Omit<
           readonly table: {
             readonly sessions: {
               columns: {
-                readonly createdAt: {
+                readonly created_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-date@1';
                   readonly nullable: false;
@@ -357,7 +358,7 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
                 };
-                readonly expiresAt: {
+                readonly expires_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-date@1';
                   readonly nullable: false;
@@ -368,6 +369,14 @@ type ContractBase = Omit<
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updated_at: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
                 };
               };
@@ -417,14 +426,14 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
-    readonly sessions: { readonly namespace: 'public' & NamespaceId; readonly model: 'sessions' };
+    readonly sessions: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
     readonly users: { readonly namespace: 'public' & NamespaceId; readonly model: 'users' };
   };
   readonly domain: {
     readonly namespaces: {
       readonly public: {
         readonly models: {
-          readonly sessions: {
+          readonly Session: {
             readonly fields: {
               readonly createdAt: {
                 readonly nullable: false;
@@ -446,15 +455,24 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly typeParams: { readonly precision: 3 };
+                };
+              };
             };
             readonly relations: Record<string, never>;
             readonly storage: {
               readonly table: 'sessions';
               readonly namespaceId: 'public';
               readonly fields: {
-                readonly createdAt: { readonly column: 'createdAt' };
-                readonly expiresAt: { readonly column: 'expiresAt' };
+                readonly createdAt: { readonly column: 'created_at' };
+                readonly expiresAt: { readonly column: 'expires_at' };
                 readonly id: { readonly column: 'id' };
+                readonly updatedAt: { readonly column: 'updated_at' };
               };
             };
           };
