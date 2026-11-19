@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'cb29d9cf5add1f3f4f8c7ec8bd2755a4505e5c29623df4ea659d82e385687ac7'>;
+  StorageHashBase<'ce85edc050045e7d049f84f1531ea0643dab2c4a210f820a2c780c810f3385f8'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -637,8 +637,8 @@ type ContractBase = Omit<
                   readonly many: false;
                 };
                 readonly postal_code: {
-                  readonly dataType: 'pg/int4';
-                  readonly codecId: 'pg/int4@1';
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
@@ -649,8 +649,8 @@ type ContractBase = Omit<
                   readonly many: false;
                 };
                 readonly street_nr: {
-                  readonly dataType: 'pg/int4';
-                  readonly codecId: 'pg/int4@1';
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
@@ -1090,7 +1090,7 @@ type ContractBase = Omit<
               };
               readonly postalCode: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly street: {
                 readonly nullable: false;
@@ -1098,7 +1098,7 @@ type ContractBase = Omit<
               };
               readonly streetNr: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
             readonly relations: Record<string, never>;
