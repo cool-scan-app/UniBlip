@@ -4,6 +4,7 @@ import { logger } from 'hono/logger'
 import { db } from './prisma/db.js'
 
 import * as userController from './controllers/userController.js'
+import * as storeController from './controllers/storeController.js'
 
 const app = new Hono()
 
@@ -51,13 +52,19 @@ api.get('/', (c: Context) => {
 })
 
 /**
- * Dummy endpoint for the team.
+ * Dummy endpoints for the team.
  */
 api.get('/team', userController.getAllUsers)
 
-/**
- * Endpoint to get a specific team member by ID.
- */
 api.get('/team/:id', userController.getUserById)
+
+/**
+ * Endpoints for stores.
+ */
+api.get('/stores', storeController.getAllStores)
+
+api.get('/stores/:storeId', storeController.getStoreById)
+
+api.get('/stores/name/:storeName', storeController.getStoreByName)
 
 export default app
