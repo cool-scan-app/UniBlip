@@ -37,6 +37,24 @@ npx tsx db_script.ts
 The users spcecified in the script are visible in the database. If you start the server and make a GET request to [`localhost:8000/api/v1/team`](http://localhost:8000/api/v1/team), the development team will be returned as a list of users. Or you can find individual team members with their id by making a GET request to `localhost:8000/api/v1/team/:id` where you replace `:id` with the id of the team member.
 
 ### Database migrations
+
+#### Apply migrations to database
+Say a developer on your team has pushed database migrations to your repository. Run 
+```bash
+npm run migrate:status
+```
+to see which contract state your database is at (`@db`) and which state the contract is pointing at (`@contract`). If there are new migrations not yet in your database you will see something like 
+```bash
+3 pending — run `prisma db migrate --to ce85edc05004`
+```
+in the output of the previous command and a graph of the migration history. Pending migrations are marked with `⧗ pending` To apply the new migrations to your database, just run 
+```bash
+npm run migrate:apply
+```
+
+
+#### Creating migrations
+
 To make changes to the database model, edit [`contract.prisma`](./src/prisma/contract.prisma) in `src/prisma/`. Regenerate `contract.d.ts` and `contract.json` with the command:
 ```bash
 npm run contract:emit
