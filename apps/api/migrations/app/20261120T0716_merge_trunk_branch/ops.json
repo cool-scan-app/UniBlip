@@ -1,0 +1,1042 @@
+[
+  {
+    "id": "table.cart_items",
+    "label": "Create table \"cart_items\"",
+    "summary": "Creates table \"cart_items\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "cart_items"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"cart_items\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cart_items\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"cart_items\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"cart_items\"",
+        "sql": "CREATE TABLE \"public\".\"cart_items\" (\n  \"cart_id\" text NOT NULL,\n  \"product_id\" text NOT NULL,\n  \"quantity\" int4 DEFAULT 1 NOT NULL,\n  \"store_id\" text NOT NULL,\n  PRIMARY KEY (\"cart_id\", \"product_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"cart_items\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"cart_items\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"cart_items\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.carts",
+    "label": "Create table \"carts\"",
+    "summary": "Creates table \"carts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "carts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"carts\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"carts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"carts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"carts\"",
+        "sql": "CREATE TABLE \"public\".\"carts\" (\n  \"created_at\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"session_id\" text NOT NULL,\n  \"store_id\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"carts\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"carts\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"carts\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.products",
+    "label": "Create table \"products\"",
+    "summary": "Creates table \"products\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"products\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"products\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"products\"",
+        "sql": "CREATE TABLE \"public\".\"products\" (\n  \"barcode\" text NOT NULL,\n  \"external_id\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"products\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"products\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"products\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.store_products",
+    "label": "Create table \"store_products\"",
+    "summary": "Creates table \"store_products\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "store_products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"store_products\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"store_products\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"store_products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"store_products\"",
+        "sql": "CREATE TABLE \"public\".\"store_products\" (\n  \"price\" money NOT NULL,\n  \"product_id\" text NOT NULL,\n  \"store_id\" text NOT NULL,\n  PRIMARY KEY (\"store_id\", \"product_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"store_products\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"store_products\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"store_products\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "alterType.store_addresses.postal_code",
+    "label": "Alter type of \"store_addresses\".\"postal_code\" to text",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "postal_code",
+        "table": "store_addresses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"postal_code\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "postal_code"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"postal_code\" on \"store_addresses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"postal_code\" to text",
+        "sql": "ALTER TABLE \"public\".\"store_addresses\" ALTER COLUMN \"postal_code\" TYPE text USING \"postal_code\"::text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"postal_code\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "postal_code",
+          "text"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.store_addresses.street_nr",
+    "label": "Alter type of \"store_addresses\".\"street_nr\" to text",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "street_nr",
+        "table": "store_addresses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"street_nr\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "street_nr"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"street_nr\" on \"store_addresses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"street_nr\" to text",
+        "sql": "ALTER TABLE \"public\".\"store_addresses\" ALTER COLUMN \"street_nr\" TYPE text USING \"street_nr\"::text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"street_nr\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "street_nr",
+          "text"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "unique.carts.carts_id_store_id_key",
+    "label": "Add unique constraint on \"carts\" (id, store_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "carts_id_store_id_key",
+        "table": "carts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"carts_id_store_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "carts_id_store_id_key",
+          "public",
+          "\"public\".\"carts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"carts_id_store_id_key\" on \"carts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"carts_id_store_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"carts\" ADD CONSTRAINT \"carts_id_store_id_key\" UNIQUE (\"id\", \"store_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"carts_id_store_id_key\" exists on (id, store_id)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "carts_id_store_id_key",
+          "public",
+          "\"public\".\"carts\"",
+          "u",
+          "[\"id\",\"store_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.carts.carts_session_id_store_id_key",
+    "label": "Add unique constraint on \"carts\" (session_id, store_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "carts_session_id_store_id_key",
+        "table": "carts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"carts_session_id_store_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "carts_session_id_store_id_key",
+          "public",
+          "\"public\".\"carts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"carts_session_id_store_id_key\" on \"carts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"carts_session_id_store_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"carts\" ADD CONSTRAINT \"carts_session_id_store_id_key\" UNIQUE (\"session_id\", \"store_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"carts_session_id_store_id_key\" exists on (session_id, store_id)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "carts_session_id_store_id_key",
+          "public",
+          "\"public\".\"carts\"",
+          "u",
+          "[\"session_id\",\"store_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.products.products_barcode_key",
+    "label": "Add unique constraint on \"products\" (barcode)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "products_barcode_key",
+        "table": "products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"products_barcode_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "products_barcode_key",
+          "public",
+          "\"public\".\"products\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"products_barcode_key\" on \"products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"products_barcode_key\"",
+        "sql": "ALTER TABLE \"public\".\"products\" ADD CONSTRAINT \"products_barcode_key\" UNIQUE (\"barcode\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"products_barcode_key\" exists on (barcode)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "products_barcode_key",
+          "public",
+          "\"public\".\"products\"",
+          "u",
+          "[\"barcode\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.cart_items.cart_items_cart_id_store_id_idx_5c3d078b",
+    "label": "Create index \"cart_items_cart_id_store_id_idx_5c3d078b\" on \"cart_items\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "cart_items_cart_id_store_id_idx_5c3d078b",
+        "table": "cart_items"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"cart_items_cart_id_store_id_idx_5c3d078b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cart_items_cart_id_store_id_idx_5c3d078b\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"cart_items_cart_id_store_id_idx_5c3d078b\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"cart_items_cart_id_store_id_idx_5c3d078b\"",
+        "sql": "CREATE INDEX \"cart_items_cart_id_store_id_idx_5c3d078b\" ON \"public\".\"cart_items\" (\"cart_id\", \"store_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"cart_items_cart_id_store_id_idx_5c3d078b\" exists on \"cart_items\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"cart_items_cart_id_store_id_idx_5c3d078b\"",
+          "i",
+          "I",
+          "\"public\".\"cart_items\"",
+          "btree",
+          "[\"cart_id\",\"store_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.cart_items.cart_items_product_id_store_id_idx_2afee116",
+    "label": "Create index \"cart_items_product_id_store_id_idx_2afee116\" on \"cart_items\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "cart_items_product_id_store_id_idx_2afee116",
+        "table": "cart_items"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"cart_items_product_id_store_id_idx_2afee116\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cart_items_product_id_store_id_idx_2afee116\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"cart_items_product_id_store_id_idx_2afee116\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"cart_items_product_id_store_id_idx_2afee116\"",
+        "sql": "CREATE INDEX \"cart_items_product_id_store_id_idx_2afee116\" ON \"public\".\"cart_items\" (\"product_id\", \"store_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"cart_items_product_id_store_id_idx_2afee116\" exists on \"cart_items\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"cart_items_product_id_store_id_idx_2afee116\"",
+          "i",
+          "I",
+          "\"public\".\"cart_items\"",
+          "btree",
+          "[\"product_id\",\"store_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.carts.carts_session_id_idx_00ba47bf",
+    "label": "Create index \"carts_session_id_idx_00ba47bf\" on \"carts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "carts_session_id_idx_00ba47bf",
+        "table": "carts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"carts_session_id_idx_00ba47bf\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"carts_session_id_idx_00ba47bf\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"carts_session_id_idx_00ba47bf\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"carts_session_id_idx_00ba47bf\"",
+        "sql": "CREATE INDEX \"carts_session_id_idx_00ba47bf\" ON \"public\".\"carts\" (\"session_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"carts_session_id_idx_00ba47bf\" exists on \"carts\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"carts_session_id_idx_00ba47bf\"",
+          "i",
+          "I",
+          "\"public\".\"carts\"",
+          "btree",
+          "[\"session_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.carts.carts_store_id_idx_e817cc5e",
+    "label": "Create index \"carts_store_id_idx_e817cc5e\" on \"carts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "carts_store_id_idx_e817cc5e",
+        "table": "carts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"carts_store_id_idx_e817cc5e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"carts_store_id_idx_e817cc5e\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"carts_store_id_idx_e817cc5e\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"carts_store_id_idx_e817cc5e\"",
+        "sql": "CREATE INDEX \"carts_store_id_idx_e817cc5e\" ON \"public\".\"carts\" (\"store_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"carts_store_id_idx_e817cc5e\" exists on \"carts\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"carts_store_id_idx_e817cc5e\"",
+          "i",
+          "I",
+          "\"public\".\"carts\"",
+          "btree",
+          "[\"store_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.store_products.store_products_product_id_idx_22a2b7d2",
+    "label": "Create index \"store_products_product_id_idx_22a2b7d2\" on \"store_products\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "store_products_product_id_idx_22a2b7d2",
+        "table": "store_products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"store_products_product_id_idx_22a2b7d2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"store_products_product_id_idx_22a2b7d2\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"store_products_product_id_idx_22a2b7d2\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"store_products_product_id_idx_22a2b7d2\"",
+        "sql": "CREATE INDEX \"store_products_product_id_idx_22a2b7d2\" ON \"public\".\"store_products\" (\"product_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"store_products_product_id_idx_22a2b7d2\" exists on \"store_products\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"store_products_product_id_idx_22a2b7d2\"",
+          "i",
+          "I",
+          "\"public\".\"store_products\"",
+          "btree",
+          "[\"product_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.store_products.store_products_store_id_idx_e817cc5e",
+    "label": "Create index \"store_products_store_id_idx_e817cc5e\" on \"store_products\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "store_products_store_id_idx_e817cc5e",
+        "table": "store_products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"store_products_store_id_idx_e817cc5e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"store_products_store_id_idx_e817cc5e\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"store_products_store_id_idx_e817cc5e\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"store_products_store_id_idx_e817cc5e\"",
+        "sql": "CREATE INDEX \"store_products_store_id_idx_e817cc5e\" ON \"public\".\"store_products\" (\"store_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"store_products_store_id_idx_e817cc5e\" exists on \"store_products\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"store_products_store_id_idx_e817cc5e\"",
+          "i",
+          "I",
+          "\"public\".\"store_products\"",
+          "btree",
+          "[\"store_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.cart_items.cart_items_cart_id_store_id_fkey",
+    "label": "Add foreign key \"cart_items_cart_id_store_id_fkey\" on \"cart_items\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "cart_items_cart_id_store_id_fkey",
+        "table": "cart_items"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"cart_items_cart_id_store_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cart_items_cart_id_store_id_fkey",
+          "public",
+          "\"public\".\"cart_items\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"cart_items_cart_id_store_id_fkey\" on \"cart_items\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"cart_items_cart_id_store_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"cart_items\"\nADD CONSTRAINT \"cart_items_cart_id_store_id_fkey\"\nFOREIGN KEY (\"cart_id\", \"store_id\")\nREFERENCES \"public\".\"carts\" (\"id\", \"store_id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"cart_items_cart_id_store_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "cart_items_cart_id_store_id_fkey",
+          "public",
+          "\"public\".\"cart_items\"",
+          "f",
+          "[\"cart_id\",\"store_id\"]",
+          "\"public\".\"carts\"",
+          "[\"id\",\"store_id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.cart_items.cart_items_product_id_store_id_fkey",
+    "label": "Add foreign key \"cart_items_product_id_store_id_fkey\" on \"cart_items\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "cart_items_product_id_store_id_fkey",
+        "table": "cart_items"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"cart_items_product_id_store_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cart_items_product_id_store_id_fkey",
+          "public",
+          "\"public\".\"cart_items\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"cart_items_product_id_store_id_fkey\" on \"cart_items\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"cart_items_product_id_store_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"cart_items\"\nADD CONSTRAINT \"cart_items_product_id_store_id_fkey\"\nFOREIGN KEY (\"product_id\", \"store_id\")\nREFERENCES \"public\".\"store_products\" (\"product_id\", \"store_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"cart_items_product_id_store_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "cart_items_product_id_store_id_fkey",
+          "public",
+          "\"public\".\"cart_items\"",
+          "f",
+          "[\"product_id\",\"store_id\"]",
+          "\"public\".\"store_products\"",
+          "[\"product_id\",\"store_id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.carts.carts_session_id_fkey",
+    "label": "Add foreign key \"carts_session_id_fkey\" on \"carts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "carts_session_id_fkey",
+        "table": "carts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"carts_session_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "carts_session_id_fkey",
+          "public",
+          "\"public\".\"carts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"carts_session_id_fkey\" on \"carts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"carts_session_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"carts\"\nADD CONSTRAINT \"carts_session_id_fkey\"\nFOREIGN KEY (\"session_id\")\nREFERENCES \"public\".\"sessions\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"carts_session_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "carts_session_id_fkey",
+          "public",
+          "\"public\".\"carts\"",
+          "f",
+          "[\"session_id\"]",
+          "\"public\".\"sessions\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.carts.carts_store_id_fkey",
+    "label": "Add foreign key \"carts_store_id_fkey\" on \"carts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "carts_store_id_fkey",
+        "table": "carts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"carts_store_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "carts_store_id_fkey",
+          "public",
+          "\"public\".\"carts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"carts_store_id_fkey\" on \"carts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"carts_store_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"carts\"\nADD CONSTRAINT \"carts_store_id_fkey\"\nFOREIGN KEY (\"store_id\")\nREFERENCES \"public\".\"stores\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"carts_store_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "carts_store_id_fkey",
+          "public",
+          "\"public\".\"carts\"",
+          "f",
+          "[\"store_id\"]",
+          "\"public\".\"stores\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.store_products.store_products_store_id_fkey",
+    "label": "Add foreign key \"store_products_store_id_fkey\" on \"store_products\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "store_products_store_id_fkey",
+        "table": "store_products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"store_products_store_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "store_products_store_id_fkey",
+          "public",
+          "\"public\".\"store_products\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"store_products_store_id_fkey\" on \"store_products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"store_products_store_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"store_products\"\nADD CONSTRAINT \"store_products_store_id_fkey\"\nFOREIGN KEY (\"store_id\")\nREFERENCES \"public\".\"stores\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"store_products_store_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "store_products_store_id_fkey",
+          "public",
+          "\"public\".\"store_products\"",
+          "f",
+          "[\"store_id\"]",
+          "\"public\".\"stores\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.store_products.store_products_product_id_fkey",
+    "label": "Add foreign key \"store_products_product_id_fkey\" on \"store_products\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "store_products_product_id_fkey",
+        "table": "store_products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"store_products_product_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "store_products_product_id_fkey",
+          "public",
+          "\"public\".\"store_products\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"store_products_product_id_fkey\" on \"store_products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"store_products_product_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"store_products\"\nADD CONSTRAINT \"store_products_product_id_fkey\"\nFOREIGN KEY (\"product_id\")\nREFERENCES \"public\".\"products\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"store_products_product_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "store_products_product_id_fkey",
+          "public",
+          "\"public\".\"store_products\"",
+          "f",
+          "[\"product_id\"]",
+          "\"public\".\"products\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  }
+]
