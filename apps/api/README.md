@@ -94,7 +94,12 @@ Server endpoints:
 
 Application endpoints (preceeded by`/api/v1`):
 | endpoint | method | description |
-| :--------: | :------: | :----------- |
+| :-------- | :------: | :----------- |
 | `/` | GET | root of application |
 | `/team` | GET | Dummy endpoint for showing dev team |
 | `/team/:id` | GET | Dummy endpoint for showing a individual dev team member by their id |
+| `/stores` | GET | returns a list of stores in json format: `{ "id": string, "name": string, "latitude": float, "longitude": float }`  |
+| `/stores/:storeId` | GET | returns a single store with given id in json: `{ "id": string, "name": string, "latitude": float, "longitude": float }` |
+| `/stores/name/:storeName` | GET | returns a single store with given name in json: `{ "id": string, "name": string, "latitude": float, "longitude": float }` |
+| `/stores-addresses` | GET | returns a list of stores in json format that includes the physical address of the store: `{"id": string, "name": string, "street": string, "streetNr": string, "city": string,"postalCode": string}` |
+| `/stores/:storeId/address` | GET | returns a single store and its address with the give store id in json format: `{"id":"b3e3b1be-7683-4734-b3ae-e771c6c1ae87","name":"Café Arken","latitude":60.45676867595919,"longitude":22.2790709899629,"street":"Tehtaankatu","streetNr":"2","city":"Turku","postalCode":"20500"}` |

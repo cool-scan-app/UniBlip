@@ -59,4 +59,31 @@ const getStoreByName = async (c: Context) => {
     }
 }
 
-export { getAllStores, getStoreById, getStoreByName };
+const getAllStoresWithAddress = async (c: Context) => {
+    try {
+        const storesWithAddress = await storeService.getAllStoresWithAddress();
+        return c.json(storesWithAddress, 200);
+    } catch (error) {
+        console.error(error);
+        return c.json({ error: "Failed to fetch stores with address" }, 500);
+    }
+}
+
+const getStoreWithAddressById = async (c: Context) => {
+    const storeId = c.req.param("storeId");
+    if (!storeId) {
+        return c.json({ error: "StoreId is required" }, 400);
+    }
+    try {
+        const storeWithAddress = await storeService.getStoreWithAddressById(storeId);
+        if (!storeWithAddress) {
+            return c.json({ error: "Store not found" }, 404);
+        }
+        return c.json(storeWithAddress, 200);
+    } catch (error) {
+        console.error(error);
+        return c.json({ error: "Failed to fetch store with address" }, 500);
+    }
+}
+
+export { getAllStores, getStoreById, getStoreByName, getStoreWithAddressById, getAllStoresWithAddress };

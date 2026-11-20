@@ -67,4 +67,8 @@ api.get('/stores/:storeId', storeController.getStoreById)
 
 api.get('/stores/name/:storeName', storeController.getStoreByName)
 
+api.get('/stores-addresses', storeController.getAllStoresWithAddress)
+
+api.get('/stores/:storeId/address', storeController.getStoreWithAddressById)
+
 export default app

@@ -15,4 +15,16 @@ const getStoreByName = async (storeName: string) => {
     return store;
 }
 
-export { getAllStores, getStoreById, getStoreByName };
+const getAllStoresWithAddress = async () => {
+    const storesWithAddress = await storeRepository.getAllStoresWithAddress();
+    return storesWithAddress;
+}
+
+const getStoreWithAddressById = async (storeId: string) => {
+    const storeWithAddress = await storeRepository.getStoreWithAddressById(storeId);
+    return storeWithAddress;
+}
+
+
+
+export { getAllStores, getStoreById, getStoreByName, getStoreWithAddressById, getAllStoresWithAddress };
