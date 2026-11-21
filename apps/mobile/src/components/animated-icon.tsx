@@ -1,61 +1,57 @@
 import { Image } from 'expo-image';
 import * as SplashScreen from 'expo-splash-screen';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import Animated, { Easing, Keyframe } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  Keyframe,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
+
+import { LoadingScreen } from '@/components/loading-screen';
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
 
 export function AnimatedSplashOverlay() {
-  const [animate, setAnimate] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [laidOut, setLaidOut] = useState(false);
+  const [logoReady, setLogoReady] = useState(false);
+  const opacity = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  useEffect(() => {
+    if (!laidOut || !logoReady) return;
+
+    let cancelled = false;
+    SplashScreen.hideAsync()
+      .catch((error: unknown) => {
+        console.error('Unable to hide the native splash screen:', error);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          opacity.value = withTiming(0, { duration: DURATION }, (finished) => {
+            if (finished) scheduleOnRN(setVisible, false);
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      cancelAnimation(opacity);
+    };
+  }, [laidOut, logoReady, opacity]);
 
   if (!visible) return null;
 
-  const splashKeyframe = new Keyframe({
-    0: {
-      transform: [{ scale: 1 }],
-      opacity: 1,
-    },
-    20: {
-      opacity: 1,
-    },
-    70: {
-      opacity: 0,
-      easing: Easing.elastic(0.7),
-    },
-    100: {
-      opacity: 0,
-      transform: [{ scale: 1 }],
-      easing: Easing.elastic(0.7),
-    },
-  });
-
-  const image = <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />;
-
-  return animate ? (
-    <Animated.View
-      entering={splashKeyframe.duration(DURATION).withCallback((finished) => {
-        'worklet';
-        if (finished) {
-          scheduleOnRN(setVisible, false);
-        }
-      })}
-      style={styles.splashOverlay}>
-      {image}
+  return (
+    <Animated.View style={[styles.splashOverlay, animatedStyle]}>
+      <LoadingScreen onLayout={() => setLaidOut(true)} onLogoReady={() => setLogoReady(true)} />
     </Animated.View>
-  ) : (
-    <View
-      onLayout={() => {
-        SplashScreen.hideAsync().finally(() => {
-          setAnimate(true);
-        });
-      }}
-      style={styles.splashOverlay}>
-      {image}
-    </View>
   );
 }
 
@@ -140,9 +136,7 @@ const styles = StyleSheet.create({
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#208AEF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#F5F7FA',
     zIndex: 1000,
   },
 });
