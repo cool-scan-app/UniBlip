@@ -1,0 +1,84 @@
+// use prisma-8
+
+model users {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+
+model Session {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  expiresAt DateTime @map("expires_at")
+
+  @@map("sessions")
+}
+
+model StoreAddress {
+  id          String  @id
+  street      String
+  streetNr    String  @map("street_nr")
+  city        String
+  postalCode  String  @map("postal_code")
+
+  @@map("store_addresses")
+}
+
+model Store {
+  id          String       @id
+  name        String
+  addressId   String       @map("address_id")
+  address     StoreAddress @relation(fields: [addressId], references: [id])
+  latitude    Float
+  longitude   Float
+
+  @@map("stores")
+}
+
+model Product {
+  id          String  @id
+  name        String
+  barcode     String  @unique
+  externalId  String  @map("external_id")
+
+  @@map("products")
+}
+
+model StoreProduct {
+  storeId   String  @map("store_id")
+  productId String  @map("product_id")
+  store     Store   @relation(fields: [storeId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  price     Money
+
+  @@id([storeId, productId])
+  @@map("store_products")
+}
+
+model Cart {
+  id        String   @id
+  sessionId String   @map("session_id")
+  storeId   String   @map("store_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  store     Store    @relation(fields: [storeId], references: [id])
+
+  @@unique([id, storeId])
+  @@unique([sessionId, storeId])
+  @@map("carts")
+}
+
+model CartItem {
+  cartId        String          @map("cart_id")
+  productId     String          @map("product_id")
+  storeId       String          @map("store_id")
+  quantity      Int             @default(1)
+
+  cart          Cart            @relation(fields: [cartId, storeId], references: [id, storeId], onDelete: Cascade)
+  storeProduct  StoreProduct    @relation(fields: [productId, storeId], references: [productId, storeId]) @map("store_product")
+  
+  @@id([cartId, productId])
+  @@map("cart_items")
+}

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "alterType.store_addresses.postal_code",
+    "label": "Alter type of \"store_addresses\".\"postal_code\" to text",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "postal_code",
+        "table": "store_addresses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"postal_code\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "postal_code"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"postal_code\" on \"store_addresses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"postal_code\" to text",
+        "sql": "ALTER TABLE \"public\".\"store_addresses\" ALTER COLUMN \"postal_code\" TYPE text USING \"postal_code\"::text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"postal_code\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "postal_code",
+          "text"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  },
+  {
+    "id": "alterType.store_addresses.street_nr",
+    "label": "Alter type of \"store_addresses\".\"street_nr\" to text",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "street_nr",
+        "table": "store_addresses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"street_nr\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "street_nr"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"street_nr\" on \"store_addresses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "alter type of \"street_nr\" to text",
+        "sql": "ALTER TABLE \"public\".\"store_addresses\" ALTER COLUMN \"street_nr\" TYPE text USING \"street_nr\"::text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"street_nr\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "store_addresses",
+          "street_nr",
+          "text"
+        ]
+      }
+    ],
+    "meta": {
+      "warning": "TABLE_REWRITE"
+    }
+  }
+]
