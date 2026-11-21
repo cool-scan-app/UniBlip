@@ -29,7 +29,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#F5F7FA",
-          "image": "./assets/images/uniblip-loading-logo.png",
+          "image": "./assets/images/uniblip-loading-logo.svg",
           "imageWidth": 221
         }
       ],

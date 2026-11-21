@@ -13,7 +13,7 @@ export function LoadingScreen({ onLayout, onLogoReady }: LoadingScreenProps) {
       <StatusBar style="dark" />
       <View style={styles.logoContainer} accessible accessibilityRole="progressbar" accessibilityLabel="Loading UniBlip">
         <Image
-          source={require('@/assets/images/uniblip-loading-logo.png')}
+          source={require('@/assets/images/uniblip-loading-logo.svg')}
           style={styles.logo}
           contentFit="contain"
           onLoad={onLogoReady}
