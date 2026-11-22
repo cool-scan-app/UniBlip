@@ -1,98 +1,207 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+import { StatusBar } from 'expo-status-bar';
+import { SymbolView, type SymbolViewProps } from 'expo-symbols';
+import light from 'expo-symbols/androidWeights/light';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const colors = {
+  background: '#F5F7FA',
+  surface: '#FFFFFF',
+  placeholder: '#DFE8F2',
+  text: '#203D5D',
+};
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+type IconName = SymbolViewProps['name'];
+
+const navigationItems: { label: string; icon: IconName; current?: boolean }[] = [
+  { label: 'Home', icon: { ios: 'house', android: 'home', web: 'home' }, current: true },
+  { label: 'Me', icon: { ios: 'person', android: 'person', web: 'person' } },
+  { label: 'Scan', icon: { ios: 'barcode.viewfinder', android: 'barcode_scanner', web: 'barcode_scanner' } },
+  { label: 'Cart', icon: { ios: 'cart', android: 'shopping_cart', web: 'shopping_cart' } },
+  { label: 'Settings', icon: { ios: 'gearshape', android: 'settings', web: 'settings' } },
+];
+
+function HomeNavigation() {
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={styles.navigation} accessibilityLabel="Home navigation">
+      {navigationItems.map(({ label, icon, current }) => {
+        const content = (
+          <>
+            <SymbolView
+              name={icon}
+              size={label === 'Scan' ? 50 : 28}
+              weight={{ ios: 'light', android: light }}
+              tintColor={colors.text}
+            />
+            <Text style={styles.navigationLabel}>{label}</Text>
+          </>
+        );
+        return current ? (
+          <View key={label} accessible accessibilityLabel="Home, current screen" style={[styles.navigationItem, styles.currentItem]}>
+            {content}
+          </View>
+        ) : (
+          <Pressable
+            key={label}
+            disabled
+            accessibilityRole="button"
+            accessibilityLabel={`${label}, coming soon`}
+            accessibilityState={{ disabled: true }}
+            aria-disabled
+            style={styles.navigationItem}>
+            {label === 'Scan' ? <View style={styles.scanItem}>{content}</View> : content}
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
+      <StatusBar style="dark" />
+      <View style={styles.page}>
+        <View style={styles.watermarkContainer} pointerEvents="none" aria-hidden>
+          <Image
+            source={require('@/assets/images/uniblip-loading-logo.svg')}
+            style={styles.watermark}
+            contentFit="contain"
           />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
+        </View>
+        <View style={styles.header}>
+          <Image
+            source={require('@/assets/images/uniblip-small-logo.svg')}
+            style={styles.logo}
+            contentFit="contain"
+            accessible
+            accessibilityLabel="UniBlip"
           />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+          <Pressable
+            style={styles.storeSelector}
+            disabled
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Choose a store, coming soon"
+            accessibilityState={{ disabled: true }}
+            aria-disabled>
+            <View style={styles.storeSelectorBackground}>
+              <Text style={styles.storeText} numberOfLines={1}>Choose a store...</Text>
+              <Image
+                source={require('@/assets/images/store-selector-icon.svg')}
+                style={styles.storeIcon}
+                contentFit="contain"
+              />
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.content} />
+        <HomeNavigation />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    backgroundColor: colors.background,
   },
-  heroSection: {
+  page: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
+  },
+  content: {
+    flex: 1,
+  },
+  watermarkContainer: {
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  watermark: {
+    width: '55%',
+    maxWidth: 221,
+    aspectRatio: 1783 / 1756,
+    opacity: 0.025,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 24,
+    paddingTop: 20,
+  },
+  logo: {
+    width: 46,
+    height: 46,
+  },
+  storeSelector: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    minHeight: 46,
+    justifyContent: 'center',
   },
-  title: {
-    textAlign: 'center',
+  storeSelectorBackground: {
+    minHeight: 46,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    backgroundColor: colors.placeholder,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
   },
-  code: {
-    textTransform: 'uppercase',
+  storeText: {
+    color: colors.text,
+    fontSize: 14,
+    flexShrink: 1,
+    marginRight: 'auto',
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  storeIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 12,
+  },
+  navigation: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    minHeight: 68,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: colors.surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  navigationItem: {
+    flex: 1,
+    minWidth: 48,
+    minHeight: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  currentItem: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 14,
+  },
+  scanItem: {
+    position: 'absolute',
+    top: -28,
+    width: 90,
+    height: 90,
+    borderRadius: 50,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  navigationLabel: {
+    color: colors.text,
+    fontSize: 12,
   },
 });
