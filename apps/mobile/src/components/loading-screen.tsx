@@ -11,16 +11,23 @@ export function LoadingScreen({ onLayout, onLogoReady }: LoadingScreenProps) {
   return (
     <View style={styles.container} onLayout={onLayout}>
       <StatusBar style="dark" />
-      <View style={styles.logoContainer} accessible accessibilityRole="progressbar" accessibilityLabel="Loading UniBlip">
+      <View style={styles.watermarkContainer} pointerEvents="none" aria-hidden>
         <Image
           source={require('@/assets/images/uniblip-loading-logo.svg')}
-          style={styles.logo}
+          style={styles.watermark}
           contentFit="contain"
           onLoad={onLogoReady}
           onError={(event) => {
             console.error('Unable to load the UniBlip loading logo:', event.error);
             onLogoReady?.();
           }}
+        />
+      </View>
+      <View style={styles.logoContainer} accessible accessibilityRole="progressbar" accessibilityLabel="Loading UniBlip">
+        <Image
+          source={require('@/assets/images/uniblip-loading-logo.svg')}
+          style={styles.logo}
+          contentFit="contain"
         />
         <Text style={styles.loading}>Loading</Text>
       </View>
@@ -35,6 +42,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F7FA',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  watermarkContainer: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  watermark: {
+    width: '55%',
+    maxWidth: 221,
+    aspectRatio: 1783 / 1756,
+    opacity: 0.025,
   },
   logoContainer: {
     width: '55%',

@@ -34,7 +34,7 @@ export function AnimatedSplashOverlay() {
       })
       .finally(() => {
         if (!cancelled) {
-          opacity.value = withTiming(0, { duration: DURATION }, (finished) => {
+          opacity.value = withTiming(0, { duration: DURATION, easing: Easing.inOut(Easing.ease) }, (finished) => {
             if (finished) scheduleOnRN(setVisible, false);
           });
         }
