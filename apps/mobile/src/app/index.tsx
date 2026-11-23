@@ -2,8 +2,14 @@ import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import light from 'expo-symbols/androidWeights/light';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { isValidStore, useActiveStore } from '@/features/store-selection/active-store';
+
+const STORE_HINT = 'Choose a store before scanning, so we can find products in the right catalog.';
 
 const colors = {
   background: '#F5F7FA',
@@ -22,7 +28,7 @@ const navigationItems: { label: string; icon: IconName; current?: boolean }[] = 
   { label: 'Settings', icon: { ios: 'gearshape', android: 'settings', web: 'settings' } },
 ];
 
-function HomeNavigation() {
+function HomeNavigation({ onScan }: { onScan: () => void }) {
   return (
     <View style={styles.navigation} accessibilityLabel="Home navigation">
       {navigationItems.map(({ label, icon, current }) => {
@@ -37,6 +43,18 @@ function HomeNavigation() {
             <Text style={styles.navigationLabel}>{label}</Text>
           </>
         );
+        if (label === 'Scan') {
+          return (
+            <Pressable
+              key={label}
+              onPress={onScan}
+              accessibilityRole="button"
+              accessibilityLabel="Scan products"
+              style={styles.navigationItem}>
+              <View style={styles.scanItem}>{content}</View>
+            </Pressable>
+          );
+        }
         return current ? (
           <View key={label} accessible accessibilityLabel="Home, current screen" style={[styles.navigationItem, styles.currentItem]}>
             {content}
@@ -59,6 +77,21 @@ function HomeNavigation() {
 }
 
 export default function HomeScreen() {
+  const { activeStore } = useActiveStore();
+  const [showStoreHint, setShowStoreHint] = useState(false);
+  const hasStore = isValidStore(activeStore);
+
+  // Scanning needs an active store (#20). Without one, explain why instead.
+  const openScanner = () => {
+    if (hasStore) {
+      setShowStoreHint(false);
+      router.push('/scan');
+    } else {
+      setShowStoreHint(true);
+      AccessibilityInfo.announceForAccessibility(STORE_HINT);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="dark" />
@@ -83,11 +116,11 @@ export default function HomeScreen() {
             disabled
             accessible
             accessibilityRole="button"
-            accessibilityLabel="Choose a store, coming soon"
+            accessibilityLabel={hasStore ? `Current store: ${activeStore.name}` : 'Choose a store, coming soon'}
             accessibilityState={{ disabled: true }}
             aria-disabled>
             <View style={styles.storeSelectorBackground}>
-              <Text style={styles.storeText} numberOfLines={1}>Choose a store...</Text>
+              <Text style={styles.storeText} numberOfLines={1}>{hasStore ? activeStore.name : 'Choose a store...'}</Text>
               <Image
                 source={require('@/assets/images/store-selector-icon.svg')}
                 style={styles.storeIcon}
@@ -97,7 +130,13 @@ export default function HomeScreen() {
           </Pressable>
         </View>
         <View style={styles.content} />
-        <HomeNavigation />
+        {showStoreHint && !hasStore ? (
+          <View style={styles.storeHint} accessibilityLiveRegion="polite" testID="store-required-hint">
+            <SymbolView name={{ ios: 'storefront', android: 'storefront', web: 'storefront' }} size={22} tintColor={colors.text} />
+            <Text style={styles.storeHintText}>{STORE_HINT}</Text>
+          </View>
+        ) : null}
+        <HomeNavigation onScan={openScanner} />
       </View>
     </SafeAreaView>
   );
@@ -199,6 +238,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
+  },
+  storeHint: {
+    marginHorizontal: 16,
+    marginBottom: 40,
+    padding: 14,
+    borderRadius: 14,
+    backgroundColor: colors.placeholder,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  storeHintText: {
+    flex: 1,
+    color: colors.text,
+    fontSize: 14,
   },
   navigationLabel: {
     color: colors.text,
