@@ -113,12 +113,12 @@ export default function HomeScreen() {
           />
           <Pressable
             style={styles.storeSelector}
-            disabled
             accessible
             accessibilityRole="button"
             accessibilityLabel={hasStore ? `Current store: ${activeStore.name}` : 'Choose a store, coming soon'}
             accessibilityState={{ disabled: true }}
-            aria-disabled>
+            aria-disabled
+            onPress={() => router.push('/store-picker')}>
             <View style={styles.storeSelectorBackground}>
               <Text style={styles.storeText} numberOfLines={1}>{hasStore ? activeStore.name : 'Choose a store...'}</Text>
               <Image
