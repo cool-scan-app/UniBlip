@@ -25,6 +25,7 @@ function RootStack() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="cart" />
       {/* Scanning requires an active store (issues #14, #20). */}
       <Stack.Protected guard={isValidStore(activeStore)}>
         <Stack.Screen name="scan" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />

@@ -55,6 +55,18 @@ function HomeNavigation({ onScan }: { onScan: () => void }) {
             </Pressable>
           );
         }
+        if (label === 'Cart') {
+          return (
+            <Pressable
+              key={label}
+              onPress={() => router.navigate('/cart')}
+              accessibilityRole="button"
+              accessibilityLabel="Open cart"
+              style={styles.navigationItem}>
+              {content}
+            </Pressable>
+          );
+        }
         return current ? (
           <View key={label} accessible accessibilityLabel="Home, current screen" style={[styles.navigationItem, styles.currentItem]}>
             {content}
