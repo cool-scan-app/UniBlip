@@ -5,15 +5,10 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { formatPrice } from '@/features/barcode-scanning/components/scan-feedback';
-import type { ScannedProduct } from '@/features/barcode-scanning/product-catalog';
+import { useCart, type CartItem } from '@/features/cart/cart-gateway';
 import { isValidStore, useActiveStore } from '@/features/store-selection/active-store';
 
-type CartItem = {
-  product: ScannedProduct;
-  quantity: number;
-};
 
-const emptyCart: CartItem[] = [];
 
 function CartProductList({ items }: { items: CartItem[] }) {
   const { activeStore } = useActiveStore();
@@ -78,6 +73,9 @@ function CartProductList({ items }: { items: CartItem[] }) {
 }
 
 export default function CartRoute() {
+    
+    const { items } = useCart();
+
   function goBack() {
     if (router.canGoBack()) {
       router.back();
@@ -102,7 +100,7 @@ export default function CartRoute() {
             My cart
           </Text>
         </View>
-        <CartProductList items={emptyCart} />
+        <CartProductList items={items} />
       </View>
     </SafeAreaView>
   );
