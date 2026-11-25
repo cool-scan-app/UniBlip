@@ -42,7 +42,7 @@ function CartProductList({ items }: { items: CartItem[] }) {
         <View style={styles.empty}>
           <View style={styles.emptyMessage}>
             <Image
-              source={require('@/assets/images/uniblip-loading-logo.svg')}
+              source={require('../../assets/images/uniblip-loading-logo.svg')}
               contentFit="contain"
               style={styles.watermark}
               accessible={false}

@@ -5,11 +5,11 @@
  */
 import { useEffect, useReducer, useRef } from 'react';
 
-import type { CartGateway } from '@/features/cart/cart-gateway';
+import { CartAddError, type CartGateway } from '@/features/cart/cart-gateway';
 import type { Store } from '@/features/store-selection/active-store';
 
 import { detectionKey, normalizeBarcode } from './barcode';
-import { ProductLookupError, type ProductCatalog, type ScannedProduct } from './product-catalog';
+import { parseProduct, ProductLookupError, type ProductCatalog, type ScannedProduct } from './product-catalog';
 import {
   AUTO_RESUME_MS,
   createDuplicateGate,
@@ -18,6 +18,7 @@ import {
   scanReducer,
   type DuplicateGate,
 } from './scan-session';
+
 
 export type BarcodeDetection = { type: string; data: string };
 
@@ -49,16 +50,25 @@ export function useBarcodeScanner({ store, catalog, cart, cooldownMs = 3000, now
   // Cancel any pending lookup when the scanner closes.
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  async function addToCart(product: ScannedProduct) {
+ async function addToCart(product: ScannedProduct) {
     dispatch({ type: 'cart-add-started', product });
+
     try {
       await cart.addScannedProduct(product);
       dispatch({ type: 'cart-add-succeeded' });
     } catch (error) {
-      dispatch({ type: 'cart-add-failed', message: messageFor(error, 'The product could not be added to your cart.') });
+      const detail =
+        error instanceof CartAddError
+          ? error.message
+          : 'The product could not be added. Please try again.';
+
+      dispatch({
+        type: 'cart-add-failed',
+        message: `${detail} Your cart is unchanged.`,
+      });
     }
   }
-
+  
   async function lookUp(barcode: string) {
     abortRef.current?.abort();
     const controller = new AbortController();
@@ -84,11 +94,17 @@ export function useBarcodeScanner({ store, catalog, cart, cooldownMs = 3000, now
         dispatch({ type: 'lookup-not-found' });
         return;
       }
-      if (result.product.storeId !== storeId || result.product.barcode !== barcode) {
-        dispatch({ type: 'lookup-failed', message: 'The product information did not match this store. Please try again.' });
+      const product = parseProduct(result.product);
+
+      if (!product || product.storeId !== storeId || product.barcode !== barcode) {
+        dispatch({
+          type: 'lookup-failed',
+          message: 'The store returned incomplete or mismatched product details.',
+        });
         return;
       }
-      await addToCart(result.product);
+
+      await addToCart(product);
     } finally {
       inFlightRef.current = false;
     }
@@ -125,10 +141,10 @@ export function useBarcodeScanner({ store, catalog, cart, cooldownMs = 3000, now
     if (state.status === 'lookup-failed') {
       void lookUp(state.barcode);
     } else if (state.status === 'cart-failed') {
-      inFlightRef.current = true;
-      void addToCart(state.product).finally(() => {
-        inFlightRef.current = false;
-      });
+   //   inFlightRef.current = true;
+   //   void addToCart(state.product).finally(() => {
+   //     inFlightRef.current = false;
+      void lookUp(state.product.barcode);
     }
   }
 
@@ -160,6 +176,8 @@ function messageFor(error: unknown, fallback: string): string {
         return 'No connection to the product catalog. Check your internet connection and try again.';
       case 'timeout':
         return 'The product catalog is taking too long to answer. Please try again.';
+      case 'bad-response':
+        return 'The store returned incomplete or mismatched product details.';
       default:
         return 'The product catalog is not available right now. Please try again.';
     }

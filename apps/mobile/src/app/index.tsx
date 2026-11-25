@@ -110,14 +110,14 @@ export default function HomeScreen() {
       <View style={styles.page}>
         <View style={styles.watermarkContainer} pointerEvents="none" aria-hidden>
           <Image
-            source={require('@/assets/images/uniblip-loading-logo.svg')}
+            source={require('../../assets/images/uniblip-loading-logo.svg')}
             style={styles.watermark}
             contentFit="contain"
           />
         </View>
         <View style={styles.header}>
           <Image
-            source={require('@/assets/images/uniblip-small-logo.svg')}
+            source={require('../../assets/images/uniblip-small-logo.svg')}
             style={styles.logo}
             contentFit="contain"
             accessible
@@ -134,7 +134,7 @@ export default function HomeScreen() {
             <View style={styles.storeSelectorBackground}>
               <Text style={styles.storeText} numberOfLines={1}>{hasStore ? activeStore.name : 'Choose a store...'}</Text>
               <Image
-                source={require('@/assets/images/store-selector-icon.svg')}
+                source={require('../../assets/images/store-selector-icon.svg')}
                 style={styles.storeIcon}
                 contentFit="contain"
               />

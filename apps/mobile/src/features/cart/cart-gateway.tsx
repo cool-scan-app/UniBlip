@@ -8,9 +8,11 @@
  * quantity rules, store scoping (#30) and totals (#31) belong there, not here.
  */
 import { createContext, use, useMemo, useState, type ReactNode } from 'react';
-
-import type { ScannedProduct } from '@/features/barcode-scanning/product-catalog';
 import { isValidStore, useActiveStore } from '@/features/store-selection/active-store';
+import {
+  parseProduct,
+  type ScannedProduct,
+} from '@/features/barcode-scanning/product-catalog';
 
 export interface CartGateway {
   /** Adds one unit of a validated product. Rejects if the cart refused it. */
@@ -35,29 +37,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const {activeStore} = useActiveStore();
   const storeId = isValidStore(activeStore) ? activeStore.id : null;
   const [itemsByProduct, setItemsByProduct] = useState<Record<string, CartItem>>({});
-
-  // const [quantities, setQuantities] = useState<Record<string, number>>({});
+/*
+   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   // Created once so the gateway identity is stable across renders.
-  //const [gateway] = useState<CartGateway>(() => ({
-  //  async addScannedProduct(product) {
-  //    setQuantities((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 }));
-  //  },
-  //}));
+  const [gateway] = useState<CartGateway>(() => ({
+    async addScannedProduct(product) {
+      setQuantities((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 }));
+    },
+  }));
+  */
 
   const gateway = useMemo<CartGateway>(
     () => ({
       async addScannedProduct(product) {
-        if (!storeId || product.storeId !== storeId) {
-          throw new Error('This product does not belong to the active store.');
+        const validated = parseProduct(product);
+
+        if (!validated) {
+          throw new CartAddError('The product details are incomplete or invalid.');
+        }
+        if (!storeId) {
+          throw new CartAddError('Choose a store before adding products.');
+        }
+        if (validated.storeId !== storeId) {
+          throw new CartAddError('This product is unavailable at the selected store.');
         }
 
-        const key = JSON.stringify([storeId, product.id]);
+        const key = JSON.stringify([storeId, validated.id]);
 
         setItemsByProduct((current) => ({
           ...current,
           [key]: {
-            product,
+            product: validated,
             quantity: (current[key]?.quantity ?? 0) + 1,
           },
         }));
@@ -82,4 +93,11 @@ export function useCart(): CartContextValue {
   const value = use(CartContext);
   if (!value) throw new Error('useCart must be used inside <CartProvider>');
   return value;
+}
+
+export class CartAddError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CartAddError';
+  }
 }
