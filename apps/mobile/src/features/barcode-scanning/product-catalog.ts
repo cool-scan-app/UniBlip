@@ -114,6 +114,7 @@ export function createApiProductCatalog({
   };
 }
 
+/*
 function parseProduct(value: unknown): ScannedProduct | null {
   if (!value || typeof value !== 'object') return null;
   const v = value as Record<string, unknown>;
@@ -130,6 +131,41 @@ function parseProduct(value: unknown): ScannedProduct | null {
   }
   return { id: v.id, name: v.name, barcode: v.barcode, storeId: v.storeId, price };
 }
+*/
+
+export function parseProduct(value: unknown): ScannedProduct | null {
+  if (!value || typeof value !== 'object') return null;
+
+  const { id, name, barcode, storeId, price } = value as Record<string, unknown>;
+
+  if (
+    typeof id !== 'string' || !id.trim() ||
+    typeof name !== 'string' || !name.trim() ||
+    typeof barcode !== 'string' || !/^\d{8,14}$/.test(barcode) ||
+    typeof storeId !== 'string' || !storeId.trim()
+  ) {
+    return null;
+  }
+
+  if (price === null) return { id, name, barcode, storeId, price };
+  if (!price || typeof price !== 'object') return null;
+
+  const { amount: rawAmount, currency } = price as Record<string, unknown>;
+  const amount =
+    typeof rawAmount === 'string' && rawAmount.trim() !== ''
+      ? Number(rawAmount)
+      : rawAmount;
+
+  if (
+    typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0 ||
+    typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency)
+  ) {
+    return null;
+  }
+
+  return { id, name, barcode, storeId, price: { amount, currency } };
+}
+
 
 /** Development data. Barcodes are canonical GTINs with valid check digits. */
 export const MOCK_PRODUCTS: Omit<ScannedProduct, 'storeId'>[] = [

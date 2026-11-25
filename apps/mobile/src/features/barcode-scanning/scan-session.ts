@@ -36,7 +36,7 @@ export function scanReducer(state: ScanState, action: ScanAction): ScanState {
   switch (action.type) {
     case 'lookup-started':
       // From scanning (new detection) or lookup-failed (retry).
-      return state.status === 'scanning' || state.status === 'lookup-failed'
+      return state.status === 'scanning' || state.status === 'lookup-failed' || state.status === 'cart-failed'
         ? { status: 'looking-up', barcode: action.barcode }
         : state;
     case 'unsupported-detected':
