@@ -57,33 +57,38 @@ function ScannerControls() {
   const { gateway } = useCart();
   const scanner = useBarcodeScanner({ store, catalog, cart: gateway });
 
-  return (
+    return (
     <>
       <Pressable
         accessibilityRole="button"
-        onPress={() => scanner.onBarcodeScanned({ type: 'ean13', data: milk.barcode })}>
+        onPress={() => scanner.onBarcodeScanned?.({ type: 'ean13', data: milk.barcode })}>
         <Text>Scan milk</Text>
       </Pressable>
+
       <Pressable
         accessibilityRole="button"
-        onPress={() => scanner.onBarcodeScanned({ type: 'ean13', data: unknownBarcode })}>
+        onPress={() => scanner.onBarcodeScanned?.({ type: 'ean13', data: unknownBarcode })}>
         <Text>Scan unknown product</Text>
       </Pressable>
+
       <Pressable
         accessibilityRole="button"
-        onPress={() => scanner.onBarcodeScanned({ type: 'ean13', data: failingBarcode })}>
+        onPress={() => scanner.onBarcodeScanned?.({ type: 'ean13', data: failingBarcode })}>
         <Text>Scan with catalog failure</Text>
       </Pressable>
+
       <Pressable
         accessibilityRole="button"
-        onPress={() => scanner.onBarcodeScanned({ type: 'qr', data: 'unsupported' })}>
+        onPress={() => scanner.onBarcodeScanned?.({ type: 'qr', data: 'unsupported' })}>
         <Text>Scan QR code</Text>
       </Pressable>
+
       <Pressable
         accessibilityRole="button"
         onPress={() => scanner.resume({ intentional: true })}>
         <Text>Scan next</Text>
       </Pressable>
+
       <Text>{scanner.state.status}</Text>
     </>
   );
