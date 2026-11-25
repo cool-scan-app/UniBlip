@@ -15,5 +15,6 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true
   },
+  "include": ["src"],
   "exclude": ["node_modules"]
 }
