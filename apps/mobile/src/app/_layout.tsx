@@ -29,6 +29,7 @@ function RootStack() {
       <Stack.Protected guard={isValidStore(activeStore)}>
         <Stack.Screen name="scan" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
       </Stack.Protected>
+      <Stack.Screen name="store-picker" />
     </Stack>
   );
 }

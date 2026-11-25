@@ -92,6 +92,10 @@ export default function HomeScreen() {
     }
   };
 
+  const openStorePicker = () => {
+    router.push('/store-picker');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar style="dark" />
@@ -118,7 +122,7 @@ export default function HomeScreen() {
             accessibilityLabel={hasStore ? `Current store: ${activeStore.name}` : 'Choose a store, coming soon'}
             accessibilityState={{ disabled: true }}
             aria-disabled
-            onPress={() => router.push('/store-picker')}>
+            onPress={openStorePicker}>
             <View style={styles.storeSelectorBackground}>
               <Text style={styles.storeText} numberOfLines={1}>{hasStore ? activeStore.name : 'Choose a store...'}</Text>
               <Image
