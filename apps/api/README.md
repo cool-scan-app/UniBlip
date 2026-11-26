@@ -103,7 +103,7 @@ Application endpoints (preceeded by`/api/v1`):
 | `/stores/name/:storeName` | GET | returns a single store with given name in json: `{ "id": string, "name": string, "latitude": float, "longitude": float }` |
 | `/stores-addresses` | GET | returns a list of stores in json format that includes the physical address of the store: `{"id": string, "name": string, "street": string, "streetNr": string, "city": string,"postalCode": string}` |
 | `/stores/:storeId/address` | GET | returns a single store and its address with the give store id in json format: `{"id":"b3e3b1be-7683-4734-b3ae-e771c6c1ae87","name":"Café Arken","latitude":60.45676867595919,"longitude":22.2790709899629,"street":"Tehtaankatu","streetNr":"2","city":"Turku","postalCode":"20500"}` |
-| `/stores/:storeId/products/barcode/:barcode` | GET | returns a single product with its barcode, name, store id and price in json format: `{"id":"b3e3b1be-7683-4734-b3ae-e771c6c1ae87","name":"Café Arken","latitude":60.45676867595919,"longitude":22.2790709899629,"street":"Tehtaankatu","streetNr":"2","city":"Turku","postalCode":"20500"}` |
+| `/stores/:storeId/products/barcode/:barcode` | GET | returns a single product with its id, barcode, name, store id and price in json format: `{"id":"1af844d0-09e2-4eec-93e6-0f68e0fafde9","storeId":"0bbabb01-5953-4190-b907-1f15defa52c0","barcode":"6420256013625","name":"Original","brand":"Mynthon","price_in_cents":299}` |
 
 
 
