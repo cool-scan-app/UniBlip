@@ -5,6 +5,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
+import { calculateCartSubtotal } from '@/features/cart/cart-summary';
 import { formatPrice } from '@/features/barcode-scanning/components/scan-feedback';
 import { useCart, type CartItem } from '@/features/cart/cart-gateway';
 import { isValidStore, useActiveStore } from '@/features/store-selection/active-store';
@@ -20,7 +21,7 @@ function CartProductList({ items }: { items: CartItem[] }) {
 
     const storeId = hasStore ? activeStore.id : null;
     const isConfirmingClear = storeId !== null && confirmClearStoreId === storeId;
-
+/*
     const subtotals = new Map<string, number>();
     let hasUnpricedItems = false;
 
@@ -33,6 +34,8 @@ function CartProductList({ items }: { items: CartItem[] }) {
     const { amount, currency } = product.price;
     subtotals.set(currency, (subtotals.get(currency) ?? 0) + amount * quantity);
     }
+*/
+    const { subtotals, hasUnpricedItems } = calculateCartSubtotal(items);
 
   return (
     <FlatList
@@ -93,16 +96,16 @@ function CartProductList({ items }: { items: CartItem[] }) {
                 {itemCount} {itemCount === 1 ? 'item' : 'items'}
             </Text>
 
-            {subtotals.size === 0 ? (
+            {subtotals.length === 0 ? (
                 <Text style={styles.caption}>Subtotal unavailable</Text>
-            ) : (
-                Array.from(subtotals, ([currency, amount]) => (
-                <Text key={currency} style={styles.productName}>
+              ) : (
+                subtotals.map((subtotal) => (
+                  <Text key={subtotal.currency} style={styles.productName}>
                     {hasUnpricedItems ? 'Priced items subtotal' : 'Subtotal'}{' '}
-                    {formatPrice({ amount, currency })}
-                </Text>
+                    {formatPrice(subtotal)}
+                  </Text>
                 ))
-            )}
+              )}
 
             {isConfirmingClear ? (
                 <>
@@ -147,6 +150,7 @@ function CartProductList({ items }: { items: CartItem[] }) {
               accessible={false}
             />
             <Text style={styles.emptyTitle}>Your cart is empty</Text>
+            <Text style={styles.caption}>{itemCount} items</Text>
             {!hasStore && (
               <Text style={styles.caption}>Choose a store before scanning.</Text>
             )}
