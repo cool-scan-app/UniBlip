@@ -47,11 +47,11 @@ model Product {
 }
 
 model StoreProduct {
-  storeId   String  @map("store_id")
-  productId String  @map("product_id")
-  store     Store   @relation(fields: [storeId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
-  price     Money
+  storeId       String  @map("store_id")
+  productId     String  @map("product_id")
+  store         Store   @relation(fields: [storeId], references: [id])
+  product       Product @relation(fields: [productId], references: [id])
+  priceInCents  Int     @map("price_in_cents")
 
   @@id([storeId, productId])
   @@map("store_products")

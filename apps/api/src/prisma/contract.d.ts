@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'47c223bf6f917aefcb6232b729417eee1029dc021bc75b5e25bb1e1187a36f3d'>;
+  StorageHashBase<'ef7b4393f9e547660c1cf622e758b9292e664054136c050acb4d1203d20fd715'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -359,7 +359,7 @@ export namespace Models {
     readonly [RelationKeys]?: never;
   };
   export type public_StoreProduct = {
-    price: FieldOutputTypes['public']['StoreProduct']['price'];
+    priceInCents: FieldOutputTypes['public']['StoreProduct']['priceInCents'];
     productId: FieldOutputTypes['public']['StoreProduct']['productId'];
     storeId: FieldOutputTypes['public']['StoreProduct']['storeId'];
     product: public_Product;
@@ -669,9 +669,9 @@ type ContractBase = Omit<
             };
             readonly store_products: {
               columns: {
-                readonly price: {
-                  readonly dataType: 'pg/money';
-                  readonly codecId: 'pg/money@1';
+                readonly price_in_cents: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
@@ -1128,9 +1128,9 @@ type ContractBase = Omit<
           };
           readonly StoreProduct: {
             readonly fields: {
-              readonly price: {
+              readonly priceInCents: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/money@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
               readonly productId: {
                 readonly nullable: false;
@@ -1171,7 +1171,7 @@ type ContractBase = Omit<
               readonly table: 'store_products';
               readonly namespaceId: 'public';
               readonly fields: {
-                readonly price: { readonly column: 'price' };
+                readonly priceInCents: { readonly column: 'price_in_cents' };
                 readonly productId: { readonly column: 'product_id' };
                 readonly storeId: { readonly column: 'store_id' };
               };

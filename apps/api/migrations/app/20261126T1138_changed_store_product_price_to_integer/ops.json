@@ -1,0 +1,135 @@
+[
+  {
+    "id": "dropColumn.store_products.price",
+    "label": "Drop column \"price\" from \"store_products\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "price",
+        "table": "store_products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"price\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_products",
+          "price"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"price\" on \"store_products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"price\"",
+        "sql": "ALTER TABLE \"public\".\"store_products\" DROP COLUMN \"price\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"price\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_products",
+          "price"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"price\" on \"store_products\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.store_products.price_in_cents",
+    "label": "Add column price_in_cents to store_products",
+    "summary": "Adds column price_in_cents to table store_products",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "store_products"
+      }
+    },
+    "operationClass": "additive",
+    "precheck": [
+      {
+        "description": "ensure column \"price_in_cents\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_products",
+          "price_in_cents"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"price_in_cents\" on \"store_products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"price_in_cents\"",
+        "sql": "ALTER TABLE \"public\".\"store_products\" ADD COLUMN \"price_in_cents\" int4 DEFAULT (0) NOT NULL"
+      },
+      {
+        "description": "drop temporary default from column \"price_in_cents\"",
+        "sql": "ALTER TABLE \"public\".\"store_products\" ALTER COLUMN \"price_in_cents\" DROP DEFAULT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"price_in_cents\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "store_products",
+          "price_in_cents"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"price_in_cents\" on \"store_products\""
+        }
+      },
+      {
+        "description": "verify column \"price_in_cents\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "store_products",
+          "price_in_cents",
+          "NO"
+        ]
+      },
+      {
+        "description": "verify column \"price_in_cents\" has no default after temporary default removal",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"column_default\" IS NOT NULL)) AS \"result\"",
+        "params": [
+          "public",
+          "store_products",
+          "price_in_cents"
+        ]
+      },
+      {
+        "description": "verify column \"price_in_cents\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "store_products",
+          "price_in_cents",
+          "integer"
+        ]
+      }
+    ]
+  }
+]

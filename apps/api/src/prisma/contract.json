@@ -478,10 +478,10 @@
           },
           "StoreProduct": {
             "fields": {
-              "price": {
+              "priceInCents": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/money@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -536,8 +536,8 @@
             },
             "storage": {
               "fields": {
-                "price": {
-                  "column": "price"
+                "priceInCents": {
+                  "column": "price_in_cents"
                 },
                 "productId": {
                   "column": "product_id"
@@ -940,9 +940,9 @@
             },
             "store_products": {
               "columns": {
-                "price": {
-                  "codecId": "pg/money@1",
-                  "dataType": "pg/money",
+                "price_in_cents": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
                 "product_id": {
@@ -1131,7 +1131,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "47c223bf6f917aefcb6232b729417eee1029dc021bc75b5e25bb1e1187a36f3d"
+    "storageHash": "ef7b4393f9e547660c1cf622e758b9292e664054136c050acb4d1203d20fd715"
   },
   "capabilities": {
     "postgres": {
