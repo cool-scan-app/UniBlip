@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'ce85edc050045e7d049f84f1531ea0643dab2c4a210f820a2c780c810f3385f8'>;
+  StorageHashBase<'47c223bf6f917aefcb6232b729417eee1029dc021bc75b5e25bb1e1187a36f3d'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -328,6 +328,7 @@ export namespace Models {
   };
   export type public_Product = {
     barcode: FieldOutputTypes['public']['Product']['barcode'];
+    brand: FieldOutputTypes['public']['Product']['brand'];
     externalId: FieldOutputTypes['public']['Product']['externalId'];
     id: FieldOutputTypes['public']['Product']['id'];
     name: FieldOutputTypes['public']['Product']['name'];
@@ -556,6 +557,12 @@ type ContractBase = Omit<
             readonly products: {
               columns: {
                 readonly barcode: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly brand: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
@@ -961,6 +968,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly brand: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly externalId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -980,6 +991,7 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly barcode: { readonly column: 'barcode' };
+                readonly brand: { readonly column: 'brand' };
                 readonly externalId: { readonly column: 'external_id' };
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };

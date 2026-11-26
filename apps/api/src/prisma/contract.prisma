@@ -37,10 +37,11 @@ model Store {
 }
 
 model Product {
-  id          String  @id
-  name        String
-  barcode     String  @unique
-  externalId  String  @map("external_id")
+  id            String  @id
+  name          String
+  brand         String
+  barcode       String  @unique
+  externalId    String  @map("external_id")
 
   @@map("products")
 }
