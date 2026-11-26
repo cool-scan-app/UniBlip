@@ -114,24 +114,6 @@ export function createApiProductCatalog({
   };
 }
 
-/*
-function parseProduct(value: unknown): ScannedProduct | null {
-  if (!value || typeof value !== 'object') return null;
-  const v = value as Record<string, unknown>;
-  if (typeof v.id !== 'string' || typeof v.name !== 'string' || typeof v.barcode !== 'string' || typeof v.storeId !== 'string') {
-    return null;
-  }
-  let price: Money | null = null;
-  if (v.price && typeof v.price === 'object') {
-    const p = v.price as Record<string, unknown>;
-    const amount = typeof p.amount === 'string' ? Number(p.amount) : p.amount;
-    if (typeof amount === 'number' && Number.isFinite(amount) && typeof p.currency === 'string') {
-      price = { amount, currency: p.currency };
-    }
-  }
-  return { id: v.id, name: v.name, barcode: v.barcode, storeId: v.storeId, price };
-}
-*/
 
 export function parseProduct(value: unknown): ScannedProduct | null {
   if (!value || typeof value !== 'object') return null;

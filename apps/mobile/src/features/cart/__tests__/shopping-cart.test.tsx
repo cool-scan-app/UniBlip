@@ -361,3 +361,77 @@ describe('#28 barcode-to-cart integration', () => {
     expect(screen.getByLabelText('Quantity 1')).toBeOnTheScreen();
   });
 });
+
+
+describe('#29 cart quantity and removal', () => {
+  async function openCartWithMilk() {
+    const app = await render(<TestApp route="scan" />);
+    await press('Scan milk');
+    await app.rerender(<TestApp route="cart" />);
+  }
+
+  function expectSubtotal(amount: number) {
+    const formatted = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(amount);
+
+    expect(screen.getByText(`Subtotal ${formatted}`)).toBeOnTheScreen();
+  }
+
+  it('updates the quantity, item count, and subtotal, and stops at one', async () => {
+    await openCartWithMilk();
+
+    const increase = `Increase quantity of ${milk.name}`;
+    const decrease = `Decrease quantity of ${milk.name}`;
+
+    expect(screen.getByLabelText('Quantity 1')).toBeOnTheScreen();
+    expectSubtotal(1.29);
+
+    await press(increase);
+
+    expect(screen.getByLabelText('Quantity 2')).toBeOnTheScreen();
+    expect(screen.getByText('2 items')).toBeOnTheScreen();
+    expectSubtotal(2.58);
+
+    await press(decrease);
+
+    expect(screen.getByLabelText('Quantity 1')).toBeOnTheScreen();
+    expect(screen.getByText('1 item')).toBeOnTheScreen();
+    expectSubtotal(1.29);
+    expect(screen.getByRole('button', { name: decrease })).toBeDisabled();
+  });
+
+  it('shows the empty state after removing the final item', async () => {
+    await openCartWithMilk();
+
+    await press(`Remove ${milk.name}`);
+
+    expect(screen.queryByText(milk.name)).toBeNull();
+    expect(screen.getByText('Your cart is empty')).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Clear cart' })).toBeNull();
+  });
+
+  it('keeps the cart on cancel and empties it after confirmation', async () => {
+    await openCartWithMilk();
+    await press(`Increase quantity of ${milk.name}`);
+
+    await press('Clear cart');
+
+    expect(screen.getByText('Remove all items from this cart?')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Quantity 2')).toBeOnTheScreen();
+
+    await press('Cancel');
+
+    expect(screen.queryByText('Remove all items from this cart?')).toBeNull();
+    expect(screen.getByLabelText('Quantity 2')).toBeOnTheScreen();
+    expectSubtotal(2.58);
+
+    await press('Clear cart');
+    await press('Remove all items');
+
+    expect(screen.queryByText(milk.name)).toBeNull();
+    expect(screen.getByText('Your cart is empty')).toBeOnTheScreen();
+    expect(screen.queryByText(/^Subtotal /)).toBeNull();
+  });
+});
