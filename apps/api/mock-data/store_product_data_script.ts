@@ -3,14 +3,14 @@ import { v4 as UUID } from 'uuid';
 
 async function main() {
     const productsToAdd = [
-        { id: UUID(), barcode: '6420256013625', name: 'Original | Sitruuna Hunaja', brand: 'Mynthon', externalId: 'K-group' },
-        { id: UUID(), barcode: '6437005058516', name: '100 Kaura', brand: 'Vaasan', externalId: 'K-group' },
-        { id: UUID(), barcode: '6420256015605', name: 'Professional | classic spearmint', brand: 'Jenkki', externalId: 'K-group' },
-        { id: UUID(), barcode: '6409770080603', name: 'Siemen Rapeat | Kurpitsan-siemen & Pellava', brand: 'Rosten', externalId: 'K-group' },
-        { id: UUID(), barcode: '6410405093134', name: 'Arrabbiata Pesto', brand: 'Pirkka', externalId: 'K-group' },
-        { id: UUID(), barcode: '6418795100302', name: 'Sinappi | Väkevä', brand: 'Salosen Pimeäpullo', externalId: 'K-group' },
-        { id: UUID(), barcode: '7311310031015', name: 'Taco Original', brand: 'Santa Maria', externalId: 'K-group' },
-        { id: UUID(), barcode: '7310240650082', name: 'Tomaattiketchup | Vähemmän Suolaa ja Sokeria', brand: 'Felix', externalId: 'K-group' }
+        { id: UUID(), barcode: '6420256013625', name: 'Original | Sitruuna Hunaja', brand: 'Mynthon' },
+        { id: UUID(), barcode: '6437005058516', name: '100 Kaura', brand: 'Vaasan' },
+        { id: UUID(), barcode: '6420256015605', name: 'Professional | classic spearmint', brand: 'Jenkki' },
+        { id: UUID(), barcode: '6409770080603', name: 'Siemen Rapeat | Kurpitsan-siemen & Pellava', brand: 'Rosten' },
+        { id: UUID(), barcode: '6410405093134', name: 'Arrabbiata Pesto', brand: 'Pirkka' },
+        { id: UUID(), barcode: '6418795100302', name: 'Sinappi | Väkevä', brand: 'Salosen Pimeäpullo' },
+        { id: UUID(), barcode: '7311310031015', name: 'Taco Original', brand: 'Santa Maria' },
+        { id: UUID(), barcode: '7310240650082', name: 'Tomaattiketchup | Vähemmän Suolaa ja Sokeria', brand: 'Felix' }
     ]
 
     const numberOfCreatedProducts = await db.orm.public.Product.createAndCount(productsToAdd, { onConflict: 'skip', conflictOn: ['barcode'] });
