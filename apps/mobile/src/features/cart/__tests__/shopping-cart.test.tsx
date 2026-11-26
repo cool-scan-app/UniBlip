@@ -540,3 +540,27 @@ describe('#30 store-scoped cart', () => {
     expect(result.current.cart.itemCount).toBe(1);
   });
 });
+
+
+describe('#31 cart summary display', () => {
+  it('shows the count and subtotal after a scan, then zero items after removal', async () => {
+    const app = await render(<TestApp route="scan" />);
+
+    await press('Scan milk');
+    await app.rerender(<TestApp route="cart" />);
+
+    const subtotal = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(1.29);
+
+    expect(screen.getByText('1 item')).toBeOnTheScreen();
+    expect(screen.getByText(`Subtotal ${subtotal}`)).toBeOnTheScreen();
+
+    await press(`Remove ${milk.name}`);
+
+    expect(screen.getByText('Your cart is empty')).toBeOnTheScreen();
+    expect(screen.getByText('0 items')).toBeOnTheScreen();
+    expect(screen.queryByText(/^Subtotal/)).toBeNull();
+  });
+});
