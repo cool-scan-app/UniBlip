@@ -4,7 +4,7 @@ const getStoreProductByBarcode = async (storeId: string, barcode: string) => {
     const storeProduct = await db.sql.public.store_products
         .innerJoin(db.sql.public.products, (f, fns) => fns.eq(f.store_products.product_id, f.products.id))
         .select((f) => ({
-            productId: f.store_products.product_id,
+            id: f.products.id,
             storeId: f.store_products.store_id,
             barcode: f.products.barcode,
             name: f.products.name,
