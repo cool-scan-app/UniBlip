@@ -23,16 +23,22 @@ async function main() {
     const cittariStoreId = '0bbabb01-5953-4190-b907-1f15defa52c0'; // ID of citymarket kupittaa
 
     const storeProductsToAdd = [
-        { storeId: cittariStoreId, productId: products[0].id, price: 2.99 },
-        { storeId: cittariStoreId, productId: products[1].id, price: 3.49 },
-        { storeId: cittariStoreId, productId: products[2].id, price: 2.49 },
-        { storeId: cittariStoreId, productId: products[3].id, price: 4.49 },
-        { storeId: cittariStoreId, productId: products[4].id, price: 2.79 },
-        { storeId: cittariStoreId, productId: products[5].id, price: 1.49 },
-        { storeId: cittariStoreId, productId: products[6].id, price: 3.99 },
-        { storeId: cittariStoreId, productId: products[7].id, price: 2.19 }
+        { storeId: cittariStoreId, productId: products[0].id, priceInCents: 299 },
+        { storeId: cittariStoreId, productId: products[1].id, priceInCents: 349 },
+        { storeId: cittariStoreId, productId: products[2].id, priceInCents: 249 },
+        { storeId: cittariStoreId, productId: products[3].id, priceInCents: 449 },
+        { storeId: cittariStoreId, productId: products[4].id, priceInCents: 279 },
+        { storeId: cittariStoreId, productId: products[5].id, priceInCents: 149 },
+        { storeId: cittariStoreId, productId: products[6].id, priceInCents: 399 },
+        { storeId: cittariStoreId, productId: products[7].id, priceInCents: 219 }
     ]
 
+    const numberOfCreatedStoreProducts = await db.orm.public.StoreProduct.createAndCount(storeProductsToAdd, { onConflict: 'skip', conflictOn: ['storeId', 'productId'] });
+
+    console.log("Number of created store products:", numberOfCreatedStoreProducts);
+
+    const storeProducts = await db.orm.public.StoreProduct.all();
+    console.log("All store products:", storeProducts);
 
     await db.close();
 }
