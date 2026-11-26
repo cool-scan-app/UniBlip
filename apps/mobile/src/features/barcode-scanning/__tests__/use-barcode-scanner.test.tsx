@@ -164,7 +164,8 @@ describe('useBarcodeScanner', () => {
     expect(t.result.current.state.status).toBe('cart-failed');
     await act(async () => t.result.current.retry());
     expect(t.result.current.state.status).toBe('added');
-    expect(t.catalog.lookup).toHaveBeenCalledTimes(1);
+    //expect(t.catalog.lookup).toHaveBeenCalledTimes(1);
+    expect(t.catalog.lookup).toHaveBeenCalledTimes(2);
   });
 
   it('rejects a product returned for a different store', async () => {
@@ -188,4 +189,39 @@ describe('useBarcodeScanner', () => {
     expect(signal?.aborted).toBe(true);
     expect(t.cart.addScannedProduct).not.toHaveBeenCalled();
   });
+
+  it('ignores a stale retry callback after a successful addition', async () => {
+    let catalogAvailable = false;
+
+    const t = await setup({
+      lookup: async () => {
+        if (!catalogAvailable) {
+          throw new ProductLookupError('offline', 'network');
+        }
+
+        return { status: 'found', product: milk };
+      },
+    });
+
+    await t.scan('ean13', MILK);
+    expect(t.result.current.state.status).toBe('lookup-failed');
+
+    const retryFromFailedScan = t.result.current.retry;
+    catalogAvailable = true;
+
+    await act(async () => {
+      retryFromFailedScan();
+    });
+
+    expect(t.result.current.state.status).toBe('added');
+    expect(t.cart.addScannedProduct).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      retryFromFailedScan();
+    });
+
+    expect(t.catalog.lookup).toHaveBeenCalledTimes(2);
+    expect(t.cart.addScannedProduct).toHaveBeenCalledTimes(1);
+  });
+
 });

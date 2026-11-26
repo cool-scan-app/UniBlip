@@ -174,6 +174,8 @@ function CartProductList({ items }: { items: CartItem[] }) {
 export default function CartRoute() {
     
     const { items } = useCart();
+    const { activeStore } = useActiveStore();
+    const cartStoreName = isValidStore(activeStore) ? activeStore.name : null;
 
   function goBack() {
     if (router.canGoBack()) {
@@ -199,6 +201,11 @@ export default function CartRoute() {
             My cart
           </Text>
         </View>
+        {cartStoreName && (
+            <Text style={styles.cartStore}>
+                Shopping at {cartStoreName}. Items stay in this store’s cart if you switch stores.
+            </Text>
+        )}
         <CartProductList items={items} />
       </View>
     </SafeAreaView>
@@ -360,5 +367,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
 
-
+    cartStore: {
+        marginHorizontal: 24,
+        marginBottom: 4,
+        color: '#4A6380',
+        fontSize: 13,
+        textAlign: 'center',
+    },
 });
