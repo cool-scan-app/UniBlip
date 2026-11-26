@@ -37,6 +37,7 @@ export function useBarcodeScanner({ store, catalog, cart, cooldownMs = 3000, now
   // Synchronous lock: the camera can fire several callbacks before React
   // re-renders, so state alone can't prevent parallel processing.
   const busyRef = useRef(false);
+  const addedForCurrentScanRef = useRef(false);
   // Prevents a double-tapped "Try again" from running two requests.
   const inFlightRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -55,6 +56,7 @@ export function useBarcodeScanner({ store, catalog, cart, cooldownMs = 3000, now
 
     try {
       await cart.addScannedProduct(product);
+      addedForCurrentScanRef.current = true;
       dispatch({ type: 'cart-add-succeeded' });
     } catch (error) {
       const detail =
@@ -114,7 +116,7 @@ export function useBarcodeScanner({ store, catalog, cart, cooldownMs = 3000, now
     if (busyRef.current) return;
     const barcode = normalizeBarcode(detection.type, detection.data);
     if (!gate().accept(detectionKey(barcode), now())) return;
-
+    addedForCurrentScanRef.current = false;
     busyRef.current = true;
     if (barcode.kind === 'unsupported') {
       dispatch({ type: 'unsupported-detected', reason: barcode.reason, barcodeType: detection.type });
@@ -137,13 +139,11 @@ export function useBarcodeScanner({ store, catalog, cart, cooldownMs = 3000, now
   }
 
   function retry() {
-    if (inFlightRef.current) return;
+    if (inFlightRef.current || addedForCurrentScanRef.current) return;
+
     if (state.status === 'lookup-failed') {
       void lookUp(state.barcode);
     } else if (state.status === 'cart-failed') {
-   //   inFlightRef.current = true;
-   //   void addToCart(state.product).finally(() => {
-   //     inFlightRef.current = false;
       void lookUp(state.product.barcode);
     }
   }

@@ -7,12 +7,9 @@
  * When #28 lands, replace the value given to <CartProvider> with the real cart;
  * quantity rules, store scoping (#30) and totals (#31) belong there, not here.
  */
-import { createContext, use, useMemo, useState, type ReactNode } from 'react';
+import { createContext, use, useMemo, useState, useRef, useLayoutEffect, type ReactNode } from 'react';
 import { isValidStore, useActiveStore } from '@/features/store-selection/active-store';
-import {
-  parseProduct,
-  type ScannedProduct,
-} from '@/features/barcode-scanning/product-catalog';
+import { parseProduct, type ScannedProduct,} from '@/features/barcode-scanning/product-catalog';
 
 export interface CartGateway {
   /** Adds one unit of a validated product. Rejects if the cart refused it. */
@@ -40,24 +37,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const {activeStore} = useActiveStore();
   const storeId = isValidStore(activeStore) ? activeStore.id : null;
   const [itemsByProduct, setItemsByProduct] = useState<Record<string, CartItem>>({});
+  const storeSession = useMemo(() => ({ storeId }), [storeId]);
+  const currentStoreSession = useRef<typeof storeSession | null>(null);
+
+  useLayoutEffect(() => {
+    currentStoreSession.current = storeSession;
+
+    return () => {
+      currentStoreSession.current = null;
+    };
+  }, [storeSession]);
 
   const gateway = useMemo<CartGateway>(
     () => ({
       async addScannedProduct(product) {
-        const validated = parseProduct(product);
+        if (currentStoreSession.current !== storeSession) {
+          throw new CartAddError('The selected store changed. Scan the product again.');
+        }
 
+        const validated = parseProduct(product);
         if (!validated) {
           throw new CartAddError('The product details are incomplete or invalid.');
         }
-        if (!storeId) {
+
+        const selectedStoreId = storeSession.storeId;
+        if (!selectedStoreId) {
           throw new CartAddError('Choose a store before adding products.');
         }
-        if (validated.storeId !== storeId) {
+
+        if (validated.storeId !== selectedStoreId) {
           throw new CartAddError('This product is unavailable at the selected store.');
         }
 
-        const key = JSON.stringify([storeId, validated.id]);
+        const key = JSON.stringify([selectedStoreId, validated.id]);
 
+        // Each accepted scan adds one unit to the existing row for this store and product.
         setItemsByProduct((current) => ({
           ...current,
           [key]: {
@@ -67,7 +81,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }));
       },
     }),
-    [storeId],
+    [storeSession],
   );
 
   function changeQuantity(productId: string, change: -1 | 1) {

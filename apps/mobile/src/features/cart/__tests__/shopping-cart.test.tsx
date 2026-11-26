@@ -1,8 +1,8 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, renderHook } from '@testing-library/react-native';
 import { router } from 'expo-router';
-import { Pressable, Text } from 'react-native';
-import {useMemo} from 'react';
+import { Pressable, Text, } from 'react-native';
+import {useMemo, type ReactNode} from 'react';
 import { ScanFeedback } from '@/features/barcode-scanning/components/scan-feedback';
 
 
@@ -16,6 +16,7 @@ import { useBarcodeScanner } from '@/features/barcode-scanning/use-barcode-scann
 import { CartAddError, CartProvider, useCart } from '@/features/cart/cart-gateway';
 import {
   ActiveStoreProvider,
+  useActiveStore,
   type Store,
 } from '@/features/store-selection/active-store';
 
@@ -433,5 +434,109 @@ describe('#29 cart quantity and removal', () => {
     expect(screen.queryByText(milk.name)).toBeNull();
     expect(screen.getByText('Your cart is empty')).toBeOnTheScreen();
     expect(screen.queryByText(/^Subtotal /)).toBeNull();
+  });
+});
+
+
+describe('#30 store-scoped cart', () => {
+  const secondStore: Store = {
+    ...store,
+    id: 'store-2',
+    name: 'Second Store',
+  };
+
+  const secondStoreMilk: ScannedProduct = {
+    ...milk,
+    storeId: secondStore.id,
+  };
+
+  function CartTestProviders({ children }: { children: ReactNode }) {
+    return (
+      <ActiveStoreProvider initialStore={store}>
+        <CartProvider>{children}</CartProvider>
+      </ActiveStoreProvider>
+    );
+  }
+
+  async function setupCart() {
+    return renderHook(
+      () => {
+        const cart = useCart();
+        const { setActiveStore } = useActiveStore();
+
+        return { cart, setActiveStore };
+      },
+      { wrapper: CartTestProviders },
+    );
+  }
+
+  it('merges repeated additions within a store and restores each store’s own cart', async () => {
+    const { result } = await setupCart();
+
+    await act(async () => {
+      await result.current.cart.gateway.addScannedProduct(milk);
+      await result.current.cart.gateway.addScannedProduct(milk);
+    });
+
+    expect(result.current.cart.items).toMatchObject([
+      { product: { id: milk.id, storeId: store.id }, quantity: 2 },
+    ]);
+    expect(result.current.cart.itemCount).toBe(2);
+
+    await act(() => {
+      result.current.setActiveStore(secondStore);
+    });
+
+    expect(result.current.cart.items).toEqual([]);
+    expect(result.current.cart.itemCount).toBe(0);
+
+    await act(async () => {
+      await expect(
+        result.current.cart.gateway.addScannedProduct(milk),
+      ).rejects.toThrow(CartAddError);
+
+      await result.current.cart.gateway.addScannedProduct(secondStoreMilk);
+    });
+
+    expect(result.current.cart.items).toMatchObject([
+      { product: { id: milk.id, storeId: secondStore.id }, quantity: 1 },
+    ]);
+    expect(result.current.cart.itemCount).toBe(1);
+
+    await act(() => {
+      result.current.setActiveStore(store);
+    });
+
+    expect(result.current.cart.items).toMatchObject([
+      { product: { id: milk.id, storeId: store.id }, quantity: 2 },
+    ]);
+    expect(result.current.cart.itemCount).toBe(2);
+  });
+
+  it('rejects an old scanner gateway even after returning to its store', async () => {
+    const { result } = await setupCart();
+    const oldGateway = result.current.cart.gateway;
+
+    await act(() => {
+      result.current.setActiveStore(secondStore);
+    });
+
+    await act(() => {
+      result.current.setActiveStore(store);
+    });
+
+    await act(async () => {
+      await expect(oldGateway.addScannedProduct(milk)).rejects.toThrow(
+        'The selected store changed. Scan the product again.',
+      );
+    });
+
+    expect(result.current.cart.items).toEqual([]);
+
+    await act(async () => {
+      await result.current.cart.gateway.addScannedProduct(milk);
+    });
+
+    expect(result.current.cart.itemCount).toBe(1);
   });
 });
