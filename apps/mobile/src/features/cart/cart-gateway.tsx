@@ -29,6 +29,9 @@ type CartContextValue = {
   items: CartItem[];
   /** Total units in the cart, for feedback such as "3 items in cart". */
   itemCount: number;
+  changeQuantity: (productId: string, change: -1 | 1) => void;
+  removeItem: (productId: string) => void;
+  clearCart: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -37,16 +40,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const {activeStore} = useActiveStore();
   const storeId = isValidStore(activeStore) ? activeStore.id : null;
   const [itemsByProduct, setItemsByProduct] = useState<Record<string, CartItem>>({});
-/*
-   const [quantities, setQuantities] = useState<Record<string, number>>({});
-
-  // Created once so the gateway identity is stable across renders.
-  const [gateway] = useState<CartGateway>(() => ({
-    async addScannedProduct(product) {
-      setQuantities((current) => ({ ...current, [product.id]: (current[product.id] ?? 0) + 1 }));
-    },
-  }));
-  */
 
   const gateway = useMemo<CartGateway>(
     () => ({
@@ -77,6 +70,49 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [storeId],
   );
 
+  function changeQuantity(productId: string, change: -1 | 1) {
+    if (!storeId) return;
+
+    const key = JSON.stringify([storeId, productId]);
+
+    setItemsByProduct((current) => {
+      const item = current[key];
+      if (!item) return current;
+
+      const quantity = item.quantity + change;
+      if (quantity < 1 || !Number.isSafeInteger(quantity)) return current;
+
+      return {
+        ...current,
+        [key]: { ...item, quantity },
+      };
+    });
+  }
+
+  function removeItem(productId: string) {
+    if (!storeId) return;
+
+    const key = JSON.stringify([storeId, productId]);
+
+    setItemsByProduct((current) => {
+      if (!current[key]) return current;
+
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  }
+
+  function clearCart() {
+    if (!storeId) return;
+
+    setItemsByProduct((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([, item]) => item.product.storeId !== storeId),
+      ),
+    );
+  }
+
   const items = Object.values(itemsByProduct).filter(
     ({product}) => product.storeId === storeId,
   );
@@ -86,7 +122,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  return <CartContext value={{ gateway, items, itemCount }}>{children}</CartContext>;
+  return <CartContext value={{ gateway, items, itemCount, changeQuantity, removeItem, clearCart }}>{children}</CartContext>;
 }
 
 export function useCart(): CartContextValue {
