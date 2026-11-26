@@ -5,7 +5,7 @@ import { Pressable, Text, } from 'react-native';
 import {useMemo, type ReactNode} from 'react';
 import { ScanFeedback } from '@/features/barcode-scanning/components/scan-feedback';
 
-
+import { calculateCartSubtotal } from '@/features/cart/cart-summary';
 import CartRoute from '@/app/cart';
 import HomeScreen from '@/app/index';
 import type {
@@ -562,5 +562,98 @@ describe('#31 cart summary display', () => {
     expect(screen.getByText('Your cart is empty')).toBeOnTheScreen();
     expect(screen.getByText('0 items')).toBeOnTheScreen();
     expect(screen.queryByText(/^Subtotal/)).toBeNull();
+  });
+});
+
+
+
+describe('#26 multi-item cart and Checkout readiness', () => {
+  function CartWithProviders({ children }: { children: ReactNode }) {
+    return (
+      <ActiveStoreProvider initialStore={store}>
+        <CartProvider>
+          {children}
+          <CartRoute />
+        </CartProvider>
+      </ActiveStoreProvider>
+    );
+  }
+
+  function expectDisplayedTotals(itemCount: number, amount: number) {
+    const subtotal = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(amount);
+
+    expect(
+      screen.getByText(`${itemCount} ${itemCount === 1 ? 'item' : 'items'}`),
+    ).toBeOnTheScreen();
+    expect(screen.getByText(`Subtotal ${subtotal}`)).toBeOnTheScreen();
+  }
+
+  it('exposes the current product lines, quantities, and subtotal through cart mutations', async () => {
+    const bar: ScannedProduct = {
+      ...chocolate,
+      price: { amount: 2.49, currency: 'EUR' },
+    };
+    const { result } = await renderHook(() => useCart(), {
+      wrapper: CartWithProviders,
+    });
+
+    expect(result.current.items).toEqual([]);
+    expect(result.current.itemCount).toBe(0);
+    expect(screen.getByText('Your cart is empty')).toBeOnTheScreen();
+    expect(screen.getByText('0 items')).toBeOnTheScreen();
+
+    await act(async () => {
+      await result.current.gateway.addScannedProduct(milk);
+      await result.current.gateway.addScannedProduct(bar);
+    });
+
+    expect(result.current.items).toEqual([
+      { product: milk, quantity: 1 },
+      { product: bar, quantity: 1 },
+    ]);
+    expect(result.current.itemCount).toBe(2);
+    expectDisplayedTotals(2, 3.78);
+
+    await press(`Increase quantity of ${milk.name}`);
+
+    expect(result.current.items).toEqual([
+      { product: milk, quantity: 2 },
+      { product: bar, quantity: 1 },
+    ]);
+    expect(result.current.itemCount).toBe(3);
+    expect(calculateCartSubtotal(result.current.items)).toEqual({
+      subtotals: [{ amount: 5.07, currency: 'EUR' }],
+      hasUnpricedItems: false,
+    });
+    expectDisplayedTotals(3, 5.07);
+
+    await press(`Remove ${bar.name}`);
+
+    expect(screen.queryByText(bar.name)).toBeNull();
+    expect(result.current.items).toEqual([{ product: milk, quantity: 2 }]);
+    expect(result.current.itemCount).toBe(2);
+    expectDisplayedTotals(2, 2.58);
+
+    // Restore a second row so clearing exercises a multi-item cart.
+    await act(async () => {
+      await result.current.gateway.addScannedProduct(bar);
+    });
+    expect(result.current.items).toHaveLength(2);
+
+    await press('Clear cart');
+    await press('Remove all items');
+
+    expect(result.current.items).toEqual([]);
+    expect(result.current.itemCount).toBe(0);
+    expect(calculateCartSubtotal(result.current.items)).toEqual({
+      subtotals: [],
+      hasUnpricedItems: false,
+    });
+    expect(screen.getByText('Your cart is empty')).toBeOnTheScreen();
+    expect(screen.getByText('0 items')).toBeOnTheScreen();
+    expect(screen.queryByText(/^Subtotal /)).toBeNull();
   });
 });
