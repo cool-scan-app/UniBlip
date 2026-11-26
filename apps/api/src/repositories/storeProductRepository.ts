@@ -7,6 +7,7 @@ const getStoreProductByBarcode = async (storeId: string, barcode: string) => {
             storeId: f.store_products.store_id,
             barcode: f.products.barcode,
             name: f.products.name,
+            brand: f.products.brand,
             price: f.store_products.price,
         }))
         .where((f, fns) => fns.and(fns.eq(f.store_products.store_id, storeId), fns.eq(f.products.barcode, barcode)))
