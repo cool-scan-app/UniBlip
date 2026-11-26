@@ -5,6 +5,7 @@ import { db } from './prisma/db.js'
 
 import * as userController from './controllers/userController.js'
 import * as storeController from './controllers/storeController.js'
+import * as storeProductController from './controllers/storeProductController.js'
 
 const app = new Hono()
 
@@ -70,5 +71,10 @@ api.get('/stores/name/:storeName', storeController.getStoreByName)
 api.get('/stores-addresses', storeController.getAllStoresWithAddress)
 
 api.get('/stores/:storeId/address', storeController.getStoreWithAddressById)
+
+/**
+ * Endpoints for store products.
+ */
+api.get('/stores/:storeId/products/barcode/:barcode', storeProductController.getStoreProductByBarcode)
 
 export default app
