@@ -41,7 +41,6 @@ model Product {
   name          String
   brand         String
   barcode       String  @unique
-  externalId    String  @map("external_id")
 
   @@map("products")
 }

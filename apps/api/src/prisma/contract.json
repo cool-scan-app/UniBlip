@@ -232,13 +232,6 @@
                   "kind": "scalar"
                 }
               },
-              "externalId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -262,9 +255,6 @@
                 },
                 "brand": {
                   "column": "brand"
-                },
-                "externalId": {
-                  "column": "external_id"
                 },
                 "id": {
                   "column": "id"
@@ -821,11 +811,6 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "external_id": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
                 "id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -1131,7 +1116,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "ef7b4393f9e547660c1cf622e758b9292e664054136c050acb4d1203d20fd715"
+    "storageHash": "3f3e706e179d5c5d73f3f607a5d5d4a23ad97c8968ea72c188f94982bfcf2bf9"
   },
   "capabilities": {
     "postgres": {

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "dropColumn.products.external_id",
+    "label": "Drop column \"external_id\" from \"products\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "external_id",
+        "table": "products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"external_id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "products",
+          "external_id"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"external_id\" on \"products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"external_id\"",
+        "sql": "ALTER TABLE \"public\".\"products\" DROP COLUMN \"external_id\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"external_id\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "products",
+          "external_id"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"external_id\" on \"products\""
+        }
+      }
+    ]
+  }
+]
