@@ -9,7 +9,7 @@ import { useBarcodeScanner } from '../use-barcode-scanner';
 
 const store: Store = { id: 'store-1', name: 'Test Store', latitude: 0, longitude: 0 };
 const MILK = '6408430000159';
-const milk: ScannedProduct = { id: 'milk', name: 'Milk', barcode: MILK, storeId: store.id, price: null };
+const milk: ScannedProduct = { id: 'milk', name: 'Milk', barcode: MILK, brand: 'Valio', storeId: store.id, price_in_cents: 129 };
 
 function deferred<T>() {
   let resolve!: (value: T) => void;

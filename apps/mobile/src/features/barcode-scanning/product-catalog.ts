@@ -3,30 +3,24 @@
  *
  * The scanner talks to the catalog only through the `ProductCatalog` interface.
  * Two implementations exist:
- *  - `createApiProductCatalog`: calls the backend endpoint proposed below.
- *  - `createMockProductCatalog`: in-memory data for development until that
- *    endpoint exists.
+ *  - `createApiProductCatalog`: calls the backend endpoint below.
+ *  - `createMockProductCatalog`: in-memory data for development.
  *
- * Proposed backend contract (not implemented in apps/api yet):
- *   GET /api/v1/stores/:storeId/products/barcode/:barcode
- *   200 -> { id, name, barcode, storeId, price: { amount, currency } | null }
- *   404 -> { "error": "Product not found" }
+ * Backend contract (apps/api, mounted under `/api/v1`, which is part of `baseUrl`):
+ *   GET {baseUrl}/stores/:storeId/products/barcode/:barcode
+ *   200 -> { id, name, brand, barcode, storeId, price_in_cents }
+ *   404 -> { "error": "Store product not found" }
  * `barcode` is the canonical GTIN produced by `normalizeBarcode`.
+ * `price_in_cents` is an integer amount in euro cents.
  */
-
-export type Money = {
-  /** Decimal amount in major units, e.g. 2.49 */
-  amount: number;
-  /** ISO 4217 code, e.g. "EUR" */
-  currency: string;
-};
 
 export type ScannedProduct = {
   id: string;
   name: string;
+  brand: string;
   barcode: string;
   storeId: string;
-  price: Money | null;
+  price_in_cents: number;
 };
 
 export type ProductLookupRequest = {
@@ -68,7 +62,7 @@ export function createApiProductCatalog({
 }): ProductCatalog {
   return {
     async lookup({ storeId, barcode, signal }) {
-      const url = `${baseUrl.replace(/\/$/, '')}/api/v1/stores/${encodeURIComponent(storeId)}/products/barcode/${encodeURIComponent(barcode)}`;
+      const url = `${baseUrl.replace(/\/$/, '')}/stores/${encodeURIComponent(storeId)}/products/barcode/${encodeURIComponent(barcode)}`;
 
       const controller = new AbortController();
       let timedOut = false;
@@ -117,28 +111,35 @@ export function createApiProductCatalog({
 function parseProduct(value: unknown): ScannedProduct | null {
   if (!value || typeof value !== 'object') return null;
   const v = value as Record<string, unknown>;
-  if (typeof v.id !== 'string' || typeof v.name !== 'string' || typeof v.barcode !== 'string' || typeof v.storeId !== 'string') {
+  if (
+    typeof v.id !== 'string' ||
+    typeof v.name !== 'string' ||
+    typeof v.brand !== 'string' ||
+    typeof v.barcode !== 'string' ||
+    typeof v.storeId !== 'string' ||
+    !Number.isInteger(v.price_in_cents) ||
+    (v.price_in_cents as number) < 0
+  ) {
     return null;
   }
-  let price: Money | null = null;
-  if (v.price && typeof v.price === 'object') {
-    const p = v.price as Record<string, unknown>;
-    const amount = typeof p.amount === 'string' ? Number(p.amount) : p.amount;
-    if (typeof amount === 'number' && Number.isFinite(amount) && typeof p.currency === 'string') {
-      price = { amount, currency: p.currency };
-    }
-  }
-  return { id: v.id, name: v.name, barcode: v.barcode, storeId: v.storeId, price };
+  return {
+    id: v.id,
+    name: v.name,
+    brand: v.brand,
+    barcode: v.barcode,
+    storeId: v.storeId,
+    price_in_cents: v.price_in_cents as number,
+  };
 }
 
 /** Development data. Barcodes are canonical GTINs with valid check digits. */
 export const MOCK_PRODUCTS: Omit<ScannedProduct, 'storeId'>[] = [
-  { id: 'mock-milk', name: 'Milk 1 L', barcode: '6408430000159', price: { amount: 1.29, currency: 'EUR' } },
-  { id: 'mock-bread', name: 'Rye bread', barcode: '6415600501811', price: { amount: 2.49, currency: 'EUR' } },
-  { id: 'mock-coffee', name: 'Coffee 500 g', barcode: '6411300000494', price: { amount: 5.99, currency: 'EUR' } },
-  { id: 'mock-chocolate', name: 'Chocolate bar', barcode: '4006381333931', price: { amount: 1.79, currency: 'EUR' } },
-  { id: 'mock-gum', name: 'Chewing gum', barcode: '96385074', price: { amount: 0.99, currency: 'EUR' } },
-  { id: 'mock-soda', name: 'Soda can', barcode: '0036000291452', price: null },
+  { id: 'mock-milk', name: 'Milk 1 L', barcode: '6408430000159', price_in_cents: 129, brand: 'Valio' },
+  { id: 'mock-bread', name: 'Rye bread', barcode: '6415600501811', price_in_cents: 249, brand: 'Vaasan' },
+  { id: 'mock-coffee', name: 'Coffee 500 g', barcode: '6411300000494', price_in_cents: 599, brand: 'Löfbergs Lila' },
+  { id: 'mock-chocolate', name: 'Chocolate bar', barcode: '4006381333931', price_in_cents: 179, brand: 'Fazer' },
+  { id: 'mock-gum', name: 'Chewing gum', barcode: '96385074', price_in_cents: 99, brand: 'Jenkki' },
+  { id: 'mock-soda', name: 'Soda can', barcode: '0036000291452', price_in_cents: 200, brand: 'Pepsi' },
 ];
 
 /** Looking up this barcode in the mock catalog simulates a server error. */

@@ -6,7 +6,6 @@ import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useEffect } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { Money } from '../product-catalog';
 import type { ScanState } from '../scan-session';
 import { scannerColors as colors } from './scanner-theme';
 
@@ -119,7 +118,7 @@ function describe(
         icon: icon('checkmark.circle.fill', 'check_circle'),
         tint: colors.success,
         title: `Added ${state.product.name}`,
-        message: [formatPrice(state.product.price), `${itemCount} ${itemCount === 1 ? 'item' : 'items'} in cart`]
+        message: [formatPrice(state.product.price_in_cents), `${itemCount} ${itemCount === 1 ? 'item' : 'items'} in cart`]
           .filter(Boolean)
           .join(' · '),
         actions: [{ label: 'Scan next', onPress: onResume, primary: true }, { label: 'Done', onPress: onClose }],
@@ -135,12 +134,12 @@ function describe(
   }
 }
 
-export function formatPrice(price: Money | null): string | null {
+export function formatPrice(price: number | null): string | null {
   if (!price) return null;
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: price.currency }).format(price.amount);
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(price / 100);
   } catch {
-    return `${price.amount.toFixed(2)} ${price.currency}`;
+    return `${(price / 100).toFixed(2)} €`;
   }
 }
 

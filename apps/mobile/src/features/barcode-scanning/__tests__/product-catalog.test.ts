@@ -6,8 +6,9 @@ const product = {
   id: 'p1',
   name: 'Milk',
   barcode: '6408430000159',
+  brand: 'Valio',
   storeId: 'store-1',
-  price: { amount: '1.29', currency: 'EUR' },
+  price_in_cents: 129,
 };
 
 function jsonResponse(status: number, body: unknown): Response {
@@ -22,13 +23,10 @@ describe('createApiProductCatalog', () => {
     const result = await catalog.lookup({ storeId: 'store-1', barcode: '6408430000159' });
 
     expect(fetchImpl).toHaveBeenCalledWith(
-      'http://api.test/api/v1/stores/store-1/products/barcode/6408430000159',
+      'http://api.test/stores/store-1/products/barcode/6408430000159',
       expect.objectContaining({ signal: expect.anything() }),
     );
-    expect(result).toEqual({
-      status: 'found',
-      product: { ...product, price: { amount: 1.29, currency: 'EUR' } },
-    });
+    expect(result).toEqual({ status: 'found', product });
   });
 
   it('returns not-found for a JSON 404', async () => {

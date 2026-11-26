@@ -7,8 +7,9 @@ const product: ScannedProduct = {
   id: 'p1',
   name: 'Milk',
   barcode: '6408430000159',
+  brand: 'Valio',
   storeId: 's1',
-  price: { amount: 1.29, currency: 'EUR' },
+  price_in_cents: 129,
 };
 
 describe('scanReducer', () => {
