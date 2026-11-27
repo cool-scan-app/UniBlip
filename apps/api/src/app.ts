@@ -1,11 +1,13 @@
 import { Context, Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { getCookie, setCookie } from 'hono/cookie'
 import { db } from './prisma/db.js'
 
 import * as userController from './controllers/userController.js'
 import * as storeController from './controllers/storeController.js'
 import * as storeProductController from './controllers/storeProductController.js'
+import * as sessionController from './controllers/sessionController.js'
 
 const app = new Hono()
 
@@ -43,7 +45,6 @@ app.get('/health/ready', async (c: Context) => {
   return c.json({ status, uptime, db_connected, timestamp })
 })
 
-  
 
 /**
  * Root endpoint.
@@ -76,5 +77,15 @@ api.get('/stores/:storeId/address', storeController.getStoreWithAddressById)
  * Endpoints for store products.
  */
 api.get('/stores/:storeId/products/barcode/:barcode', storeProductController.getStoreProductByBarcode)
+
+/**
+ * Endpoints for sessions.
+ */
+api.get('/session', sessionController.getSessionByToken)
+
+api.post('/session', sessionController.createSession)
+
+api.put('/session', sessionController.updateSession)
+
 
 export default app

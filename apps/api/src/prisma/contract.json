@@ -296,6 +296,13 @@
                   "kind": "scalar"
                 }
               },
+              "tokenHash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -318,6 +325,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "tokenHash": {
+                  "column": "token_hash"
                 },
                 "updatedAt": {
                   "column": "updated_at"
@@ -864,6 +874,11 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "token_hash": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
                 "updated_at": {
                   "codecId": "pg/timestamptz-date@1",
                   "dataType": "pg/timestamptz",
@@ -884,7 +899,13 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "token_hash"
+                  ]
+                }
+              ]
             },
             "store_addresses": {
               "columns": {
@@ -1116,7 +1137,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "3f3e706e179d5c5d73f3f607a5d5d4a23ad97c8968ea72c188f94982bfcf2bf9"
+    "storageHash": "a32c4e8e89dd71ee7116b7d8b7f82b73253a43fc811f22a3bc24b218ed02722e"
   },
   "capabilities": {
     "postgres": {

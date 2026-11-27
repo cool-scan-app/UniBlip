@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'3f3e706e179d5c5d73f3f607a5d5d4a23ad97c8968ea72c188f94982bfcf2bf9'>;
+  StorageHashBase<'a32c4e8e89dd71ee7116b7d8b7f82b73253a43fc811f22a3bc24b218ed02722e'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -337,6 +337,7 @@ export namespace Models {
     createdAt: FieldOutputTypes['public']['Session']['createdAt'];
     expiresAt: FieldOutputTypes['public']['Session']['expiresAt'];
     id: FieldOutputTypes['public']['Session']['id'];
+    tokenHash: FieldOutputTypes['public']['Session']['tokenHash'];
     updatedAt: FieldOutputTypes['public']['Session']['updatedAt'];
     readonly [RelationKeys]?: never;
   };
@@ -608,6 +609,12 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
+                readonly token_hash: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
                 readonly updated_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-date@1';
@@ -618,7 +625,7 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [];
+              uniques: readonly [{ readonly columns: readonly ['token_hash'] }];
               indexes: readonly [];
               foreignKeys: readonly [];
             };
@@ -1008,6 +1015,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly tokenHash: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1025,6 +1036,7 @@ type ContractBase = Omit<
                 readonly createdAt: { readonly column: 'created_at' };
                 readonly expiresAt: { readonly column: 'expires_at' };
                 readonly id: { readonly column: 'id' };
+                readonly tokenHash: { readonly column: 'token_hash' };
                 readonly updatedAt: { readonly column: 'updated_at' };
               };
             };
