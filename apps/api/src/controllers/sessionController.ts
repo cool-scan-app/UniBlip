@@ -1,33 +1,23 @@
-import { Context } from 'hono';
+import type { Context } from 'hono';
+import type { AppEnv } from '../types/env';
 import * as sessionService from '../services/sessionService';
 
-const getSessionByToken = async (c: Context) => {
-    const token = c.req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-        return c.json({ error: 'Missing token' }, 400);
-    }
-    const session = await sessionService.getSessionByToken(token);
-    if (!session) {
-        return c.json({ error: 'Session not found' }, 404);
-    }
-    return c.json(session);
-}
-
+/**
+ * Starts a new session. The token is only returned here; the client must send it
+ * as `Authorization: Bearer <token>` on routes protected by `requireSession`.
+ */
 const createSession = async (c: Context) => {
-    const response = await sessionService.createSession();
-    return c.json(response);
+    const { token, session } = await sessionService.createSession();
+    return c.json({ token, expiresAt: session.expiresAt }, 201);
 }
 
-const updateSession = async (c: Context) => {
-    const token = c.req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-        return c.json({ error: 'Missing token' }, 400);
-    }
-    const updatedSession = await sessionService.updateSession(token);
-    if (!updatedSession) {
-        return c.json({ error: 'Session not found' }, 404);
-    }
-    return c.json(updatedSession);
+/**
+ * Returns the current session. Runs behind `requireSession`, which has already
+ * validated the token and extended the expiry, so this doubles as a keep-alive.
+ */
+const getSession = (c: Context<AppEnv>) => {
+    const session = c.get('session');
+    return c.json({ expiresAt: session.expiresAt });
 }
 
-export { getSessionByToken, createSession, updateSession };
+export { createSession, getSession };

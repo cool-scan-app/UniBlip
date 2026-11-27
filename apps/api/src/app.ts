@@ -8,8 +8,10 @@ import * as userController from './controllers/userController.js'
 import * as storeController from './controllers/storeController.js'
 import * as storeProductController from './controllers/storeProductController.js'
 import * as sessionController from './controllers/sessionController.js'
+import { requireSession } from './middleware/sessionMiddleware.js'
+import type { AppEnv } from './types/env.js'
 
-const app = new Hono()
+const app = new Hono<AppEnv>()
 
 const api = app.basePath('/api/v1')
 app.use('*', logger())
@@ -80,12 +82,12 @@ api.get('/stores/:storeId/products/barcode/:barcode', storeProductController.get
 
 /**
  * Endpoints for sessions.
+ * POST starts a session and returns its token. Routes that need a session (e.g. carts)
+ * use the `requireSession` middleware, which returns 401 on a missing/expired token.
  */
-api.get('/session', sessionController.getSessionByToken)
-
 api.post('/session', sessionController.createSession)
 
-api.put('/session', sessionController.updateSession)
+api.get('/session', requireSession, sessionController.getSession)
 
 
 export default app
